@@ -26,10 +26,10 @@ const OnboardOne = () => {
                 source={require('../../assets/Images/onboard.jpg')}
                 style={styles.image}
             />
-            <View style={{ flex: 1, width: '100%', position: 'absolute', bottom: 10, justifyContent: 'flex-end', alignItems: 'center' }}>
-                <View style={{ width: '95%', alignItems: 'flex-start', paddingHorizontal: 10, paddingVertical: 10 }}>
-                    <Text style={{ color: Color.white, fontSize: 32, fontFamily: Manrope.Medium }}>Effortless access to exquisite
-                        <Text style={{ color: '#CC9933', fontSize: 40, fontFamily: Manrope.Bold }}> jewelry</Text></Text>
+            <View style={{ flex: 1, width: '100%', position: 'absolute', bottom: 50, justifyContent: 'flex-end', alignItems: 'center' }}>
+                <View style={{ width: '95%', alignItems: 'flex-start', paddingHorizontal: 10, paddingVertical: 20 }}>
+                    <Text style={{ color: Color.white, fontSize: 30, fontFamily: Manrope.Medium }}>Effortless access to exquisite
+                        <Text style={{ color: '#CC9933', fontSize: 38, fontFamily: Manrope.Bold }}> jewelry</Text></Text>
                 </View>
                 <TouchableOpacity onPress={() => navigation.navigate("Auth")} style={{ width: '90%', height: 50, justifyContent: 'center', alignItems: 'center', marginVertical: 20, backgroundColor: Color.white, borderRadius: 5 }}>
                     <Text style={{ fontSize: 16, color: Color.lightBlack, fontFamily: Manrope.Medium }}>Get Started</Text>

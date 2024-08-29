@@ -15,6 +15,7 @@ import { Manrope } from '../../Global/FontFamily';
 import { Iconviewcomponent } from '../../Components/Icontag';
 import { useNavigation } from '@react-navigation/native';
 import { scr_height, scr_width } from '../../Utils/Dimensions';
+import { ToastAndroid } from 'react-native';
 
 // create a component
 const Login = () => {
@@ -48,7 +49,49 @@ const Login = () => {
             setError('');
         }
     };
+    const loginVerify = async () => {
+        try {
+            setLoading(true);
+            const numberIsMobile = isMobile(number);
+            if (number != '') {
+                if (numberIsMobile && number.length === 10) {
+                    ToastAndroid.show("Login Success! Welcome to MR Brothers", ToastAndroid.SHORT)
+                    navigation.navigate("OTPScreen", {
+                        number,
+                        token: ""
+                    })
+                    // var data = {
+                    //     mobile: number
+                    // };
+                    // const login_data = await fetchData.login_with_otp(data, null);
+                    // if (login_data?.status) {
+                    //     ToastAndroid.show(login_data?.message, ToastAndroid.SHORT)
+                    //     navigation.dispatch(
+                    //         StackActions.replace('OTPScreen', {
+                    //             number,
+                    //             token: login_data?.token,
+                    //             loginType,
+                    //         }),
+                    //     );
+                    //     setLoading(false);
+                    // } else {
+                    //     var msg = login_data?.message;
+                    //     setError(msg);
+                    //     setLoading(false);
+                    // }
+                    setLoading(false);
+                } else {
+                    ToastAndroid.show("Enter your valid phone number", ToastAndroid.SHORT)
+                    setLoading(false);
+                }
+            } else {
+                ToastAndroid.show("Enter your phone number", ToastAndroid.SHORT)
+            }
+        } catch (error) {
+            console.log("catch in login_Verify :", error);
 
+        }
+    }
 
     return (
         <SafeAreaView style={styles.container}>
@@ -59,32 +102,11 @@ const Login = () => {
                 />
             </View>
             <View style={{ flex: 1.2, width: '100%', justifyContent: 'center', alignItems: 'center' }}>
-                <View
-                    style={{
-                        width: '95%',
-                        padding: 10,
-                        marginTop: 20,
-                    }}>
-                    <Text style={{
-                        textAlign: 'left',
-                        fontSize: 26,
-                        color: Color.black,
-                        fontFamily: Manrope.SemiBold,
-                    }}>Welcome Back</Text>
+                <View style={{ width: '95%', padding: 10, marginTop: 20, }}>
+                    <Text style={{ textAlign: 'left', fontSize: 26, color: Color.black, fontFamily: Manrope.SemiBold, }}>Welcome Back</Text>
                 </View>
-                <View
-                    style={{
-                        width: '95%',
-                        padding: 10,
-                    }}>
-                    <Text
-                        style={{
-                            fontSize: 16,
-                            color: Color.lightBlack,
-                            fontFamily: Manrope.SemiBold,
-                        }}>
-                        Mobile Number
-                    </Text>
+                <View style={{ width: '95%', padding: 10, }}>
+                    <Text style={{ fontSize: 16, color: Color.lightBlack, fontFamily: Manrope.SemiBold, }}>Mobile Number </Text>
                     <View style={{ marginVertical: 10 }}>
                         <View style={styles.NumberBoxConatiner}>
                             <View style={styles.numberCountryCode}>
@@ -101,6 +123,7 @@ const Login = () => {
                                 value={number}
                                 maxLength={10}
                                 autoFocus={false}
+                                keyboardType='phone-pad'
                                 onChangeText={input => {
                                     chkNumber(input);
                                     chkNumberError(input);
@@ -123,14 +146,7 @@ const Login = () => {
                             alignItems: 'center',
                             borderRadius: 5,
                         }}>
-                        <Text
-                            style={{
-                                fontSize: 16,
-                                color: Color.white,
-                                fontFamily: Manrope.SemiBold,
-                                letterSpacing: 0.5,
-                                lineHeight: 22,
-                            }}>Sign in </Text>
+                        <Text style={{ fontSize: 16, color: Color.white, fontFamily: Manrope.SemiBold, letterSpacing: 0.5, }}>Sign in </Text>
                     </TouchableOpacity>
                 </View>
                 <View
@@ -141,7 +157,7 @@ const Login = () => {
                     }}>
                     <View
                         style={{
-                            width: '45%',
+                            width: '40%',
                             height: 0.5,
                             backgroundColor: Color.transparantBlack,
                             borderRadius: 5,
@@ -155,12 +171,12 @@ const Login = () => {
                             letterSpacing: 0.5,
                             lineHeight: 22,
                         }}>
-                        {'('}
-                        or{')'}
+                        {'( '}
+                        or{' )'}
                     </Text>
                     <View
                         style={{
-                            width: '45%',
+                            width: '40%',
                             height: 0.5,
                             backgroundColor: Color.transparantBlack,
                             borderRadius: 5,
@@ -174,7 +190,7 @@ const Login = () => {
                             fontFamily: Manrope.Medium,
                         }}> Don't Have An Account?</Text>
                     <TouchableOpacity
-                        onPress={() => console.log("Register")}>
+                        onPress={() => navigation.navigate("Register")}>
                         <Text
                             style={{
                                 fontSize: 16,

@@ -18,6 +18,8 @@ import Profile from './Screens/Home/BottomTabs/Profile';
 import Login from './Screens/Auth/Login';
 import OTPScreen from './Screens/Auth/OTPScreen';
 import { Iconviewcomponent } from './Components/Icontag';
+import Register from './Screens/Auth/Register';
+import StoreRegister from './Screens/Auth/StoreRegister';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -33,26 +35,27 @@ export const HomeStack = () => {
       <Stack.Screen
         name="ProductDetails"
         component={ProductDetails}
-        options={({ navigation, route }) => ({
-          headerTitle: 'Product Details',
-          headerTitleAlign: 'center',
-          headerTitleStyle: {
-            color: Color.black,
-            fontSize: 18,
-            fontFamily: Manrope.Bold,
-          },
-          headerStyle: { backgroundColor: Color.white },
-          headerLeft: () => (
-            <View style={{ marginHorizontal: 10 }}>
-              <Icon
-                name="arrow-back"
-                size={30}
-                color={Color.black}
-                onPress={() => navigation.goBack()}
-              />
-            </View>
-          ),
-        })}
+        options={{ headerShown: false }}
+      // options={({ navigation, route }) => ({
+      //   headerTitle: 'Product Details',
+      //   headerTitleAlign: 'center',
+      //   headerTitleStyle: {
+      //     color: Color.black,
+      //     fontSize: 18,
+      //     fontFamily: Manrope.Bold,
+      //   },
+      //   headerStyle: { backgroundColor: Color.white },
+      //   headerLeft: () => (
+      //     <View style={{ marginHorizontal: 10 }}>
+      //       <Icon
+      //         name="arrow-back"
+      //         size={30}
+      //         color={Color.black}
+      //         onPress={() => navigation.goBack()}
+      //       />
+      //     </View>
+      //   ),
+      // })}
       />
       <Stack.Screen
         name="AboutUs"
@@ -165,14 +168,14 @@ export const MyOrderStack = () => {
         name="MyOrder"
         component={MyOrders}
         options={({ navigation }) => ({
-          headerTitle: 'My Cart',
+          headerTitle: 'My Orders',
           headerTitleAlign: 'center',
           headerTitleStyle: {
             color: Color.black,
             fontFamily: Manrope.Bold,
-            fontSize: 18,
+            fontSize: 18, elevation: 0.5
           },
-          headerStyle: { backgroundColor: Color.white },
+          headerStyle: { backgroundColor: Color.white, elevation: 0.5 },
           headerLeft: () => (
             <View style={{ marginHorizontal: 10 }}>
               <Icon
@@ -198,26 +201,27 @@ export const ProfileStack = () => {
       <Stack.Screen
         name="Profile"
         component={Profile}
-        options={({ navigation }) => ({
-          headerTitle: 'My Account',
-          headerTitleAlign: 'center',
-          headerTitleStyle: {
-            color: Color.black,
-            fontFamily: Manrope.Bold,
-            fontSize: 18,
-          },
-          headerStyle: { backgroundColor: Color.white },
-          headerLeft: () => (
-            <View style={{ marginHorizontal: 10 }}>
-              <Icon
-                name="arrow-back"
-                size={30}
-                color={Color.black}
-                onPress={() => navigation.goBack()}
-              />
-            </View>
-          ),
-        })}
+        options={{ headerShown: false }}
+      // options={({ navigation }) => ({
+      //   headerTitle: 'My Account',
+      //   headerTitleAlign: 'center',
+      //   headerTitleStyle: {
+      //     color: Color.black,
+      //     fontFamily: Manrope.Bold,
+      //     fontSize: 18,
+      //   },
+      //   headerStyle: { backgroundColor: Color.white },
+      //   headerLeft: () => (
+      //     <View style={{ marginHorizontal: 10 }}>
+      //       <Icon
+      //         name="arrow-back"
+      //         size={30}
+      //         color={Color.black}
+      //         onPress={() => navigation.goBack()}
+      //       />
+      //     </View>
+      //   ),
+      // })}
       />
     </Stack.Navigator>
   );
@@ -236,6 +240,16 @@ export const Auth = () => {
         component={OTPScreen}
         options={{ headerShown: false }}
       />
+      <Stack.Screen
+        name="Register"
+        component={Register}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="StoreRegister"
+        component={StoreRegister}
+        options={{ headerShown: false }}
+      />
     </Stack.Navigator>
   );
 };
@@ -243,8 +257,8 @@ export const Auth = () => {
 const TabNavigator = () => {
   const userData = useSelector(state => state.UserReducer.userData);
   var { token } = userData;
-  const dataCount = useSelector(state => state.UserReducer.count);
-  var { wishlist, cart } = dataCount;
+  // const dataCount = useSelector(state => state.UserReducer.count);
+  // var { wishlist, cart } = dataCount;
 
   const dispatch = useDispatch();
 
@@ -308,7 +322,7 @@ const TabNavigator = () => {
                   }}>
                   <Iconviewcomponent
                     Icontag={'Ionicons'}
-                    iconname={'cart-sharp'}
+                    iconname={'bag-handle'}
                     icon_size={25}
                     icon_color={Color.primary}
                   />
@@ -319,14 +333,14 @@ const TabNavigator = () => {
                     color: focused ? Color.primary : '#999999',
                     fontFamily: Manrope.Bold,
                   }}>
-                  My Cart
+                  My Orders
                 </Text>
               </View>
             ) : (
               <View style={{ alignItems: 'center', justifyContent: 'flex-end' }}>
                 <Iconviewcomponent
                   Icontag={'Ionicons'}
-                  iconname={'cart-outline'}
+                  iconname={'bag-handle-outline'}
                   icon_size={22}
                   icon_color={'#999999'}
                 />
@@ -336,7 +350,7 @@ const TabNavigator = () => {
                     color: focused ? Color.primary : '#999999',
                     fontFamily: Manrope.Bold,
                   }}>
-                  My Cart
+                  My Orders
                 </Text>
               </View>
             );
