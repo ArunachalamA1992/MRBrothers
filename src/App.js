@@ -29,6 +29,7 @@ import AboutUs from './Screens/SideMenu/AboutUs';
 import { Manrope } from './Global/FontFamily';
 import ProfileView from './Screens/ProfileScreens/ProfileView';
 import MyCart from './Screens/Home/MyCart';
+import Notification_Screen from './Screens/Home/BottomTabs/Notification';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -38,8 +39,6 @@ export const navigationRef = React.createRef();
 
 const MyDrawer = () => {
   const dispatch = useDispatch();
-
-
   return (
     <PaperProvider>
       <NavigationContainer ref={navigationRef}>
@@ -66,6 +65,7 @@ const MyDrawer = () => {
 };
 
 const App = () => {
+  
   return (
     <Provider store={Store}>
       <MyDrawer />
@@ -142,6 +142,7 @@ const MainApp = () => {
             ),
           })}
         />
+       
         <Stack.Screen
           name="TermsandConditions"
           component={TermsandConditions}
@@ -231,6 +232,11 @@ const MainApp = () => {
               </View>
             ),
           })}
+        />
+        <Stack.Screen
+          name="NotificationScreen"
+          component={Notification_Screen}
+          options={{headerShown: false}}
         />
 
         {/* 

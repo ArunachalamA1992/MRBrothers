@@ -1,164 +1,95 @@
 import axios from 'axios';
-
-import { baseUrl, base_auctionUrl } from './base_url';
-
+import {baseUrl} from './base_url';
 export const api = {
   header: () => {
-    let header = {
+    return {
       Accept: 'application/json',
       'Content-Type': 'application/json',
     };
-    return header;
+  },
+  // GET Method
+  getMethod: (url,accessToken) => {
+    const headers = {
+      ...api.header(),
+    };
+    if (accessToken) {      
+      headers.Authorization = `Bearer ${accessToken}`;
+    }
+    return fetch(baseUrl + url, {
+      method: 'GET',
+      headers: headers,
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data) {
+          return data;
+        }
+      })
+      .catch((err) => Promise.reject(err));
   },
 
-  //properties
-  getMethod: (url, data) => {
-    var headers = api.header();
-    return new Promise((resolve, reject) => {
-      axios
-        .get(baseUrl + url, {
-          headers: headers,
-        })
-        .then(res => {
-          if (res.status == 200) {
-            resolve(res.data);
-          }
-        })
-        .catch(err => reject(err));
-    });
+  // POST Method
+  postMethod: (url, data , accessToken) => { 
+    const headers = {
+      ...api.header(),
+    };
+    if (accessToken) {      
+      headers.Authorization = `Bearer ${accessToken}`;
+    }
+    console.log("Check", headers);
+    return fetch(baseUrl + url, {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify(data),
+    })
+      .then((res) => res.json())
+      .then((datas) => {
+        if (datas) {
+          return datas;
+        }
+      })
+      .catch((err) => Promise.resolve(err));
+  },
+  // PUT Method
+  putMethod: (url, data, accessToken) => {
+    const headers = {
+      ...api.header(),
+    };
+    if (accessToken) {      
+      headers.Authorization = `Bearer ${accessToken}`;
+    }
+    return fetch(baseUrl + url, {
+      method: 'PUT',
+      headers: headers,
+      body: JSON.stringify(data),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data) {
+          return data;
+        }
+      })
+      .catch((err) => Promise.reject(err));
   },
 
-  postMethod: (url, data) => {
-    var headers = api.header();
-    const formData = new FormData();
-    Object.keys(data).map(obj => {
-      formData.append(obj, data[obj]);
-    });
-    return new Promise((resolve, reject) => {
-      axios
-        .post(baseUrl + url, data, { headers: headers })
-        .then(res => {
-          if (res.status == 200) {
-            resolve(res.data);
-          }
-        })
-        .catch(err => resolve(err.response.data));
-    });
-  },
-
-  putMethod: (url, data) => {
-    var headers = api.header();
-    return new Promise((resolve, reject) => {
-      axios
-        .put(baseUrl + url, data, {
-          headers: headers,
-        })
-        .then(res => {
-          if (res.status == 200) {
-            resolve(res.data);
-          }
-        })
-        .catch(err => reject(err));
-    });
-  },
-
-  deleteMethod: (url, data) => {
-    var headers = api.header();
-    return new Promise((resolve, reject) => {
-      axios
-        .delete(baseUrl + url, data, {
-          headers: headers,
-        })
-        .then(res => {
-          if (res.status == 200) {
-            resolve(res.data);
-          }
-        })
-        .catch(err => reject(err));
-    });
-  },
-
-  //auction
-  AuctiongetMethod: (url, data) => {
-    var headers = api.header();
-    return new Promise((resolve, reject) => {
-      axios
-        .get(base_auctionUrl + url, {
-          headers: headers,
-        })
-        .then(res => {
-          if (res.status == 200) {
-            resolve(res.data);
-          }
-        })
-        .catch(err => reject(err));
-    });
-  },
-
-  AuctionpostMethod: (url, data) => {
-    var headers = api.header();
-    const formData = new FormData();
-    Object.keys(data).map(obj => {
-      formData.append(obj, data[obj]);
-    });
-    return new Promise((resolve, reject) => {
-      axios
-        .post(base_auctionUrl + url, data, { headers: headers })
-        .then(res => {
-          if (res.status == 200) {
-            resolve(res.data);
-          }
-        })
-        .catch(err => resolve(err.response.data));
-    });
-  },
-
-  AuctionputMethod: (url, data) => {
-    var headers = api.header();
-    return new Promise((resolve, reject) => {
-      axios
-        .put(base_auctionUrl + url, data, {
-          headers: headers,
-        })
-        .then(res => {
-          if (res.status == 200) {
-            resolve(res.data);
-          }
-        })
-        .catch(err => reject(err));
-    });
-  },
-
-  AuctiondeleteMethod: (url, data) => {
-    var headers = api.header();
-    return new Promise((resolve, reject) => {
-      axios
-        .delete(base_auctionUrl + url, data, {
-          headers: headers,
-        })
-        .then(res => {
-          if (res.status == 200) {
-            resolve(res.data);
-          }
-        })
-        .catch(err => reject(err));
-    });
-  },
-
-  //geolocation
-  Auction_geolocation_getMethod: (url, data) => {
-    var headers = api.header();
-    return new Promise((resolve, reject) => {
-      axios
-        .get(base_auctionUrl + url, {
-          headers: headers,
-        })
-        .then(res => {
-          if (res.status == 200) {
-            resolve(res.data);
-          }
-        })
-        .catch(err => reject(err));
-    });
+  // DELETE Method
+  deleteMethod: (url, accessToken) => {
+    const headers = {
+      ...api.header(),
+    };
+    if (accessToken) {      
+      headers.Authorization = `Bearer ${accessToken}`;
+    }
+    return fetch(baseUrl + url, {
+      method: 'DELETE',
+      headers: headers,
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data) {
+          return data;
+        }
+      })
+      .catch((err) => Promise.reject(err));
   },
 };

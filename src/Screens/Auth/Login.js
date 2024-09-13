@@ -9,6 +9,8 @@ import {
     TextInput,
     Keyboard,
     SafeAreaView,
+    Alert,
+    ActivityIndicator
 } from 'react-native';
 import Color from '../../Global/Color';
 import { Manrope } from '../../Global/FontFamily';
@@ -16,6 +18,8 @@ import { Iconviewcomponent } from '../../Components/Icontag';
 import { useNavigation } from '@react-navigation/native';
 import { scr_height, scr_width } from '../../Utils/Dimensions';
 import { ToastAndroid } from 'react-native';
+import fetchData from '../../Config/fetchData';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // create a component
 const Login = () => {
@@ -49,46 +53,62 @@ const Login = () => {
             setError('');
         }
     };
+    const createTwoButtonAlert = (data) =>
+        Alert.alert('Please Wait', data, [
+          {text: 'OK', onPress: () => console.log('OK Pressed')},
+        ]);
     const loginVerify = async () => {
         try {
             setLoading(true);
             const numberIsMobile = isMobile(number);
             if (number != '') {
                 if (numberIsMobile && number.length === 10) {
-                    ToastAndroid.show("Login Success! Welcome to MR Brothers", ToastAndroid.SHORT)
-                    navigation.navigate("OTPScreen", {
-                        number,
-                        token: ""
-                    })
-                    // var data = {
-                    //     mobile: number
-                    // };
-                    // const login_data = await fetchData.login_with_otp(data, null);
-                    // if (login_data?.status) {
-                    //     ToastAndroid.show(login_data?.message, ToastAndroid.SHORT)
-                    //     navigation.dispatch(
-                    //         StackActions.replace('OTPScreen', {
-                    //             number,
-                    //             token: login_data?.token,
-                    //             loginType,
-                    //         }),
-                    //     );
-                    //     setLoading(false);
-                    // } else {
-                    //     var msg = login_data?.message;
-                    //     setError(msg);
-                    //     setLoading(false);
-                    // }
+                   const Data = {
+                       mobile: number
+                   }
+                   const UserLogin = await fetchData?.User_Login(Data, null);
+                   if(UserLogin?.success == true)
+                   {
+                    ToastAndroid.show("OTP send successfully", ToastAndroid.SHORT)
+                    await AsyncStorage.setItem('ACCESS_TOKEN', UserLogin?.token);
                     setLoading(false);
+                     navigation.push("OTPScreen", {
+                        IS_Mobile_number:true,   
+                        Mobile_Number:number, 
+                        token: UserLogin?.token
+                    })
+                   }else{
+                    if(UserLogin?.message == "Please wait, Your login request is in review")
+                    {
+                        setLoading(false);
+                        createTwoButtonAlert(UserLogin?.message);
+                    }else{  
+                        console.log("catch in login_Verify :", UserLogin);
+                        if(UserLogin?.message == "User not found")
+                        {
+                            ToastAndroid.show("User not found", ToastAndroid.SHORT)
+                            setLoading(false);
+                        }else{
+                            ToastAndroid.show("Something went wrong", ToastAndroid.SHORT)
+                            setLoading(false);
+                        }
+                        console.log("catch in login_Verify :", UserLogin?.message);
+                        setLoading(false);
+                        
+                    }
+                   }
+                    
                 } else {
-                    ToastAndroid.show("Enter your valid phone number", ToastAndroid.SHORT)
+                    ToastAndroid.show("Something went wrong", ToastAndroid.SHORT)
                     setLoading(false);
                 }
             } else {
                 ToastAndroid.show("Enter your phone number", ToastAndroid.SHORT)
+                setLoading(false);
             }
         } catch (error) {
             console.log("catch in login_Verify :", error);
+            setLoading(false);
 
         }
     }
@@ -145,8 +165,10 @@ const Login = () => {
                             justifyContent: 'center',
                             alignItems: 'center',
                             borderRadius: 5,
-                        }}>
-                        <Text style={{ fontSize: 16, color: Color.white, fontFamily: Manrope.SemiBold, letterSpacing: 0.5, }}>Sign in </Text>
+                        }}
+                        disabled={loading?true:false}
+                        >
+                         {loading ? <ActivityIndicator size="small" color={Color.white} /> :<Text style={{ fontSize: 16, color: Color.white, fontFamily: Manrope.SemiBold, letterSpacing: 0.5, }}>Sign in </Text>}
                     </TouchableOpacity>
                 </View>
                 <View

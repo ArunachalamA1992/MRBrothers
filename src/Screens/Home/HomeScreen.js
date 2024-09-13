@@ -30,16 +30,20 @@ import { Manrope } from '../../Global/FontFamily';
 
 import { SwiperFlatList } from 'react-native-swiper-flatlist';
 import { Media } from '../../Global/Media';
+import fetchData from '../../Config/fetchData';
+import {useDispatch,useSelector} from 'react-redux';
+import { setCartCount } from '../../Redux/user/UserAction';
+import HomePage_Skeleton from '../../Components/skeleton/HomePage';
 
 LogBox.ignoreAllLogs();
 const { width } = Dimensions.get('window');
 // create a component
 const HomeScreen = () => {
-
     const navigation = useNavigation();
+    const dispatch = useDispatch();
     const [netInfo_State, setNetinfo] = useState(true);
     const [height, setHeight] = useState(undefined);
-
+    const [Category_Data,setcategory_Data] =useState([]);
     const [categoryData, setCategoryData] = useState([
         {
             id: '0',
@@ -82,7 +86,6 @@ const HomeScreen = () => {
         //     cat_image: require('../../assets/Images/earing.png')
         // },
     ]);
-
     const [shopSection] = useState([
         { id: 1, title: 'banners', data: ['banners'] },
         { id: 2, title: 'Category', data: ['Category'] },
@@ -95,7 +98,6 @@ const HomeScreen = () => {
         { id: 9, title: 'Latest Product', data: ['Latest Product'] },
         { id: 10, title: 'Featured Product', data: ['Featured Product'] },
     ]);
-
     const [bannerData, setBannerData] = useState([
         {
             id: '0',
@@ -128,11 +130,42 @@ const HomeScreen = () => {
             // ban_image: Media.banner_one,
         },
     ]);
-
+    const get_Cart_Count =async()=>{
+           try {
+            // const Cartcount = await Cart_List
+            const Cartcount = await fetchData?.Cart_List();
+            console.log(Cartcount?.data?.length,'{{{{');
+            dispatch(setCartCount(Cartcount?.data?.length))      
+           } catch (error) {
+            console.log('catch in get_Cart_Count : ', error);
+            
+           }
+    }
+    const get_Category_List = async()=>{
+        try {
+            // const Cartcount = await Cart_List
+            const CategoryList = await fetchData?.Category_List();
+            console.log(CategoryList?.data,"CategoryListCategoryList");
+            setcategory_Data(CategoryList?.data) 
+           } catch (error) {
+            console.log('catch in get_Cart_Count : ', error);
+            
+           }
+    }
+    useEffect(() => {
+        // setTimeout(() => {
+        //     setNetinfo(false);
+        // }, 3000);
+        get_Category_List();
+        get_Cart_Count();
+    }, []);
+    // USESELECTOR  FROM REDUX : 
+    const cart_count  = useSelector(state => state.UserReducer.Cart_Count);
+    console.log("cart_count",cart_count);
+    
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar backgroundColor={Color.primary} barStyle={'light-content'} />
-
             {netInfo_State ? null : (
                 <Animated.View
                     animation="fadeInRight"
@@ -152,7 +185,6 @@ const HomeScreen = () => {
                     <Text style={{ color: 'white' }}>No Internet Connection</Text>
                 </Animated.View>
             )}
-
             <View style={{ flex: 1, alignItems: 'center' }}>
                 <View style={{ width: '100%', alignItems: 'center' }}>
                     <View style={{ width: '95%', marginVertical: 10, flexDirection: 'row', alignItems: 'center' }}>
@@ -175,7 +207,7 @@ const HomeScreen = () => {
                                         fontFamily: Manrope.Bold,
                                         fontSize: 13,
                                     }}>
-                                    2
+                                    {cart_count ? cart_count : 0}
                                 </Badge>
                                 <Iconviewcomponent
                                     Icontag={'AntDesign'}
@@ -184,7 +216,9 @@ const HomeScreen = () => {
                                     icon_color={Color.black}
                                 />
                             </TouchableOpacity>
-                            <TouchableOpacity style={{ paddingHorizontal: 10 }}>
+                            <TouchableOpacity style={{ paddingHorizontal: 10 }}
+                            onPress={() => navigation.navigate("NotificationScreen")}
+                            >
                                 <Iconviewcomponent
                                     Icontag={'FontAwesome'}
                                     iconname={'bell-o'}
@@ -273,16 +307,19 @@ const HomeScreen = () => {
                                             </TouchableOpacity> */}
                                         </View>
 
-                                        <View style={{ width: scr_width, height: 'auto', marginBottom: 90 }}>
+                                        <View style={{ width: scr_width, height: 'auto', marginBottom: scr_height * 0.18 }}>
                                             <FlatList
-                                                data={categoryData}
+                                                data={Category_Data}
                                                 keyExtractor={(item, index) => item + index}
                                                 numColumns={2}
                                                 columnWrapperStyle={styles.row}
                                                 renderItem={({ item, index }) => {
+                                                    console.log('====================================');
+                                                    console.log(item,'++');
+                                                    console.log('====================================');
                                                     return (
                                                         <TouchableOpacity
-                                                            onPress={() => navigation.navigate("ProductDetails")}
+                                                            onPress={() => navigation.navigate("ProductListing",{CategoryList:item})}
                                                             style={{
                                                                 width: 180,
                                                                 height: 180,
@@ -292,8 +329,7 @@ const HomeScreen = () => {
                                                             }}>
                                                             <View style={{ borderRadius: 10, }}>
                                                                 <Image
-                                                                    source={item.cat_image}
-                                                                    // source={require('../../assets/Images/ring.png')}
+                                                                    source={{ uri: item?.image }}
                                                                     style={{
                                                                         width: 170,
                                                                         height: 160,
@@ -310,7 +346,7 @@ const HomeScreen = () => {
                                                                         font: Manrope.Bold,
                                                                         paddingVertical: 5,
                                                                     }}>
-                                                                    {item?.cat_name}
+                                                                    {item?.name}
                                                                 </Text>
                                                             </View>
                                                         </TouchableOpacity>
@@ -333,7 +369,7 @@ const HomeScreen = () => {
                 />
             </View>
         </SafeAreaView>
-
+        //    <HomePage_Skeleton/>
     );
 };
 
