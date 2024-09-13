@@ -162,6 +162,7 @@ const Login = () => {
                             backgroundColor: Color.transparantBlack,
                             borderRadius: 5,
                         }}></View>
+                        {/* Git main Changes */}
                     <Text
                         style={{
                             textAlign: 'center',
