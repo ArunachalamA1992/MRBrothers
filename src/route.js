@@ -4,7 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useDispatch, useSelector } from 'react-redux';
-import { setDataCount } from './Redux';
+import { setDataCount, setUserData } from './Redux';
 import HomeScreen from './Screens/Home/HomeScreen';
 import Color from './Global/Color';
 import { Manrope } from './Global/FontFamily';
@@ -20,6 +20,9 @@ import OTPScreen from './Screens/Auth/OTPScreen';
 import { Iconviewcomponent } from './Components/Icontag';
 import Register from './Screens/Auth/Register';
 import StoreRegister from './Screens/Auth/StoreRegister';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import ProductListing from './Screens/Home/ProductListing';
+import OrderSummary from './Screens/Home/OrderSummary';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -57,6 +60,16 @@ export const HomeStack = () => {
       //   ),
       // })}
       />
+      <Stack.Screen
+          name="ProductListing"
+          component={ProductListing}
+          options={{ headerShown: false }}
+        />
+      <Stack.Screen
+          name="OrderSummary"
+          component={OrderSummary}
+          options={{ headerShown: false }}
+        />
       <Stack.Screen
         name="AboutUs"
         component={AboutUs}
@@ -167,26 +180,27 @@ export const MyOrderStack = () => {
       <Stack.Screen
         name="MyOrder"
         component={MyOrders}
-        options={({ navigation }) => ({
-          headerTitle: 'My Orders',
-          headerTitleAlign: 'center',
-          headerTitleStyle: {
-            color: Color.black,
-            fontFamily: Manrope.Bold,
-            fontSize: 18, elevation: 0.5
-          },
-          headerStyle: { backgroundColor: Color.white, elevation: 0.5 },
-          headerLeft: () => (
-            <View style={{ marginHorizontal: 10 }}>
-              <Icon
-                name="arrow-back"
-                size={30}
-                color={Color.black}
-                onPress={() => navigation.goBack()}
-              />
-            </View>
-          ),
-        })}
+        options={{ headerShown: false }}
+        // options={({ navigation }) => ({
+        //   headerTitle: 'My Orders',
+        //   headerTitleAlign: 'center',
+        //   headerTitleStyle: {
+        //     color: Color.black,
+        //     fontFamily: Manrope.Bold,
+        //     fontSize: 18, elevation: 0.5
+        //   },
+        //   headerStyle: { backgroundColor: Color.white, elevation: 0.5 },
+        //   headerLeft: () => (
+        //     <View style={{ marginHorizontal: 10 }}>
+        //       <Icon
+        //         name="arrow-back"
+        //         size={30}
+        //         color={Color.black}
+        //         onPress={() => navigation.goBack()}
+        //       />
+        //     </View>
+        //   ),
+        // })}
       />
     </Stack.Navigator>
   );
@@ -231,16 +245,6 @@ export const Auth = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: true }}>
       <Stack.Screen
-        name="Login"
-        component={Login}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="OTPScreen"
-        component={OTPScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
         name="Register"
         component={Register}
         options={{ headerShown: false }}
@@ -250,17 +254,34 @@ export const Auth = () => {
         component={StoreRegister}
         options={{ headerShown: false }}
       />
+      <Stack.Screen
+        name="Login"
+        component={Login}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="OTPScreen"
+        component={OTPScreen}
+        options={{ headerShown: false }}
+      />
     </Stack.Navigator>
   );
 };
 
 const TabNavigator = () => {
   const userData = useSelector(state => state.UserReducer.userData);
+  const dispatch = useDispatch();
+  // const userdetails = async()=>{
+  //   const User_Data = await AsyncStorage.getItem('User_Data');
+  //   console.log("userData",User_Data);
+  //   dispatch(setUserData(JSON.parse(User_Data)))
+  // }
+  // useEffect(() => {
+  //   userdetails()
+  // }, [])
   var { token } = userData;
   // const dataCount = useSelector(state => state.UserReducer.count);
   // var { wishlist, cart } = dataCount;
-
-  const dispatch = useDispatch();
 
   return (
     <Tab.Navigator

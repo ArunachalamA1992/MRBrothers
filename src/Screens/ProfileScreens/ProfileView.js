@@ -14,9 +14,14 @@ import { scr_height, scr_width } from '../../Utils/Dimensions';
 import { Manrope } from '../../Global/FontFamily';
 import { Iconviewcomponent } from '../../Components/Icontag';
 import { Divider } from 'react-native-paper';
+import { useDispatch, useSelector } from 'react-redux';
 
 // create a component
 const ProfileView = () => {
+    const dispatch = useDispatch();
+    const userData = useSelector(state => state.UserReducer.userData);
+    console.log("userData",userData);
+    
     return (
         <View style={styles.container}>
             {/* <ScrollView showsVerticalScrollIndicator={false}> */}
@@ -32,7 +37,7 @@ const ProfileView = () => {
                         <Text style={{ paddingHorizontal: 10, fontSize: 18, color: Color.black, fontFamily: Manrope.SemiBold, }}>
                             Personal Details
                         </Text>
-                        <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        {/* <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <Iconviewcomponent
                                 Icontag={'MaterialIcons'}
                                 iconname={'edit'}
@@ -42,7 +47,7 @@ const ProfileView = () => {
                             <Text style={{ textAlign: 'left', fontSize: 14, color: Color.primary, fontFamily: Manrope.SemiBold, textDecorationLine: 'underline', marginLeft: 5, }}>
                                 Edit Profile
                             </Text>
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
                     </View>
 
                     <View style={{ width: '100%', paddingHorizontal: 10, marginTop: 20 }}>
@@ -58,7 +63,7 @@ const ProfileView = () => {
                                 paddingVertical: 5,
                                 textTransform: 'capitalize',
                             }}>
-                            Arunachalam Annamalai
+                           {userData?.name  ? userData?.name : 'Testing'}
                         </Text>
                     </View>
                     <View style={{ width: scr_width - 30, height: 1, backgroundColor: Color.Venus, marginVertical: 10 }}></View>
@@ -74,9 +79,9 @@ const ProfileView = () => {
                                 color: Color.black,
                                 fontFamily: Manrope.Medium,
                                 paddingVertical: 5,
-                                textTransform: 'capitalize',
+                                // textTransform: 'capitalize',
                             }}>
-                            arunachalam@avanexa.com
+                            {userData?.email  ? userData?.email : 'Testing@gmail.com'}
                         </Text>
                     </View>
                     <View style={{ width: scr_width - 30, height: 1, backgroundColor: Color.Venus, marginVertical: 10 }}></View>
@@ -94,7 +99,7 @@ const ProfileView = () => {
                                 paddingVertical: 5,
                                 textTransform: 'capitalize',
                             }}>
-                            +91 8825659803
+                           {`+91 ${userData?.mobile  ? userData?.mobile : '1234567890'}`}
                         </Text>
                     </View>
                     <View style={{ width: scr_width - 30, height: 1, backgroundColor: Color.Venus, marginVertical: 10 }}></View>
@@ -112,7 +117,7 @@ const ProfileView = () => {
                                 paddingVertical: 5,
                                 textTransform: 'capitalize',
                             }}>
-                            24, Vinayagar Koil St, Krishnaswamy Nagar,
+                            {userData?.address_line ? `${userData?.address_line}` : '123 ABC Street'}
                         </Text>
                         <Text
                             style={{
@@ -123,7 +128,7 @@ const ProfileView = () => {
                                 paddingVertical: 5,
                                 textTransform: 'capitalize',
                             }}>
-                            Ramanathapuram, Coimbatore,
+                            {userData?.city ? `${userData?.city}` : ' Tiruppur'}
                         </Text>
                         <Text
                             style={{
@@ -134,7 +139,7 @@ const ProfileView = () => {
                                 paddingVertical: 5,
                                 textTransform: 'capitalize',
                             }}>
-                            Tamil Nadu 641045
+                           {userData?.state && userData?.pincode ? `${userData?.state}  ${userData?.pincode}` : 'Tamilnadu 641604'}
                         </Text>
                     </View>
                     <View style={{ width: scr_width - 30, height: 1, backgroundColor: Color.Venus, marginVertical: 10 }}></View>
