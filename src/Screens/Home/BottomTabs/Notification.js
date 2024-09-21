@@ -6,13 +6,13 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import { Iconviewcomponent } from '../../../Components/Icontag';
+import React, {useEffect, useState} from 'react';
+import {Iconviewcomponent} from '../../../Components/Icontag';
 import Color from '../../../Global/Color';
-import { Manrope } from '../../../Global/FontFamily';
+import {Manrope} from '../../../Global/FontFamily';
 import fetchData from '../../../Config/fetchData';
 
-const Notification_Screen = ({ route, navigation }) => {
+const Notification_Screen = ({route, navigation}) => {
   // const NotificationScreen = [
   //   {
   //     id: 1,
@@ -89,9 +89,9 @@ const Notification_Screen = ({ route, navigation }) => {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: Color.softGrey }}>
-      {/* <TouchableOpacity
-        style={{ flexDirection: 'row', alignItems: 'center', gap: 20 }}
+    <View style={{flex: 1, backgroundColor: 'white', padding: 15}}>
+      <TouchableOpacity
+        style={{flexDirection: 'row', alignItems: 'center', gap: 20}}
         onPress={() => navigation.goBack()}>
         <Iconviewcomponent
           Icontag={'AntDesign'}
@@ -107,30 +107,29 @@ const Notification_Screen = ({ route, navigation }) => {
           }}>
           Notification
         </Text>
-      </TouchableOpacity> */}
-      <ScrollView style={{ flex: 1, marginVertical: 10 }} showsVerticalScrollIndicator={false}>
+      </TouchableOpacity>
+      <ScrollView style={{flex: 1, padding: 10, gap: 10}}
+      showsVerticalScrollIndicator={false}
+      >
         {notification?.map(item => {
           return (
             <TouchableOpacity
               style={{
-                width: '100%',
-                backgroundColor: Color.white,
-                // borderColor: Color?.primary,
-                // borderWidth: 1,
-                // borderRadius: 10, 
-                margin: 0, padding: 5, paddingHorizontal: 10, paddingVertical: 10, marginVertical: 5
-                // gap: 10,
-                // paddingLeft: 10,
-                // paddingTop: 5,
-                // marginBottom: 10,
+                borderColor:Color?.primary,
+                borderWidth: 1,
+                borderRadius: 10,
+                gap: 10,
+                paddingLeft: 10,
+                paddingTop: 5,
+                marginBottom: 10,
               }}
               onPress={() => MarkasRead(item)}>
-              <View style={{ alignItems: 'flex-start', }}>
-                <Text style={{ fontSize: 15, color: Color?.lightBlack, fontFamily: Manrope.SemiBold, letterSpacing: 0.5, lineHeight: 22, paddingTop: 5, textTransform: 'capitalize' }}>{item.msg_type}</Text>
-                <Text style={{ fontSize: 13, fontFamily: Manrope.Medium, letterSpacing: 0.5, lineHeight: 22, textTransform: 'capitalize', color: Color?.cloudyGrey }}>{item.content}</Text>
+              <View style={{alignItems: 'flex-start', gap: 5}}>
+                <Text style={{fontSize: 16,color:Color?.primary,fontFamily:Manrope.SemiBold,textTransform:'capitalize'}}>{item.msg_type}</Text>
+                <Text style={{fontSize: 14,fontFamily:Manrope.Medium,textTransform:'capitalize',color:Color?.black}}>{item.content}</Text>
               </View>
-              <View style={{ alignItems: 'flex-end', padding: 5 }}>
-                <Text style={{ fontSize: 12, fontFamily: Manrope.Medium, letterSpacing: 0.5, lineHeight: 22, textTransform: 'capitalize', color: Color?.cloudyGrey }}>{formatTimeAgo(item.createdAt)}</Text>
+              <View style={{alignItems: 'flex-end', padding: 5}}>
+                <Text>{formatTimeAgo(item.createdAt)}</Text>
                 {/* <Text>mmm</Text> */}
               </View>
             </TouchableOpacity>

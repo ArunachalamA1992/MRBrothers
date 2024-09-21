@@ -1,5 +1,5 @@
 //import liraries
-import React, { Component, useState } from 'react';
+import React, { Component, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, Image, FlatList } from 'react-native';
 import Color from '../../Global/Color';
 import { Manrope } from '../../Global/FontFamily';
@@ -9,7 +9,11 @@ import { useNavigation } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
 
 // create a component
-const SelectCategory = () => {
+const SelectCategory = ({route}) => {
+    const CategoryDatas = route.params;
+    console.log('====================================');
+    console.log(CategoryDatas);
+    console.log('====================================');
     const navigation = useNavigation();
     const dispatch = useDispatch();
     const [netInfo_State, setNetinfo] = useState(true);
@@ -76,6 +80,14 @@ const SelectCategory = () => {
             'cat_product': '30'
         },
     ])
+    const [category_Data, setCategory_Data] = useState([]);
+    //  GET CATEGORIES API FUNCTION :
+    const GetSubCategories = async () => {
+        
+    }
+    useEffect(() => {
+
+    }, [])
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: Color.white }}>
             <View style={{ flex: 1 }}>
@@ -86,7 +98,7 @@ const SelectCategory = () => {
                             keyExtractor={(item, index) => item + index}
                             renderItem={({ item, index }) => {
                                 return (
-                                    <TouchableOpacity onPress={() => navigation.navigate("ProductListing", { CategoryList: item })}
+                                    <TouchableOpacity onPress={() => navigation.navigate("ProductListing", { CategoryList: CategoryDatas?.CategoryList })}
                                         style={{
                                             width: '98%',
                                             flexDirection: 'row', justifyContent: 'space-between',

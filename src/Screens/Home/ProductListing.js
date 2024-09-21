@@ -30,16 +30,16 @@ import { scr_height, scr_width } from '../../Utils/Dimensions';
 import SwiperFlatList from 'react-native-swiper-flatlist';
 import { useDispatch, useSelector } from 'react-redux';
 import fetchData from '../../Config/fetchData';
+import { setCartCount } from '../../Redux/user/UserAction';
 
 const ProductListing = ({ route, navigation }) => {
   const cart_count = useSelector(state => state.UserReducer.Cart_Count);
+  const dispatch = useDispatch();
   const { width } = Dimensions.get('window');
   const [height, setHeight] = useState(undefined);
   const [netInfo_State, setNetinfo] = useState(true);
   const [selectItem, setSelectItem] = useState('0');
   const CategoryData = route.params;
-  console.log(CategoryData, 'CategoryDataCategoryData');
-
   const [filterData, setFilterData] = useState([
     {
       id: '0',
@@ -49,8 +49,13 @@ const ProductListing = ({ route, navigation }) => {
       id: '1',
       filter_name: 'Women',
     },
+
     {
       id: '2',
+      filter_name: 'Couple',
+    },
+    {
+      id: '3',
       filter_name: 'Kids',
     },
   ]);
@@ -64,6 +69,8 @@ const ProductListing = ({ route, navigation }) => {
     if (category == 1) {
       value = 'Women';
     } else if (category == 2) {
+      value = 'couple';
+    } else if (category == 3) {
       value = 'kids';
     } else {
       value = 'men';
@@ -73,6 +80,7 @@ const ProductListing = ({ route, navigation }) => {
       if (Product_Details?.success == true) {
         setCategoryData(Product_Details?.data);
       } else {
+        setCategoryData([]);
         console.log('Failed To Get Product List', Product_Details);
       }
     } catch (error) {
@@ -102,11 +110,9 @@ const ProductListing = ({ route, navigation }) => {
       };
       const CART_FUNCTION = await fetchData?.New_Add_To_Cart(data);
       if (CART_FUNCTION?.success == true) {
-        console.log('jbhjbh');
         GetProductList(CategoryData?.CategoryList?._id, selectItem);
-        console.log('Successfully Added To Cart');
-      }
-      else {
+        get_Cart_Count();
+      } else {
         if (CART_FUNCTION?.success == false) {
           if (CART_FUNCTION?.message == 'Cart already exist') {
             ToastAndroid.show(CART_FUNCTION?.message, ToastAndroid.SHORT);
@@ -119,17 +125,91 @@ const ProductListing = ({ route, navigation }) => {
       console.log('catch in AddToCart : ', error);
     }
   };
-  // UPDATE THE CART FUNCTION
-  const updateCart = async item => {
-    console.log('updateCart : ', item);
-    try {
-      console.log("SSSSSS");
 
+  // Cart Count Api : 
+  const get_Cart_Count = async () => {
+    try {
+      const Cartcount = await fetchData?.Cart_List();
+      if (Cartcount?.success == true) {
+        dispatch(setCartCount(Cartcount?.data?.length));
+      } else {
+        if (Cartcount?.message == 'No Data found for this request') {
+          dispatch(setCartCount(0));
+        } else {
+          console.log('Failed To Get Cart');
+        }
+      }
     } catch (error) {
-      ToastAndroid.show('Something went wrong', ToastAndroid.SHORT);
-      console.log('catch in updateCart : ', error);
+      console.log('catch in get_Cart_Count : ', error);
     }
-  }
+  };
+
+  // UPDATE THE CART FUNCTION
+  // const updateCart = async item => {
+  //   console.log('updateCart : ', item);
+  //   try {
+  //     console.log('SSSSSS');
+  //   } catch (error) {
+  //     ToastAndroid.show('Something went wrong', ToastAndroid.SHORT);
+  //     console.log('catch in updateCart : ', error);
+  //   }
+  // };
+
+  // Delete Api In Cart 
+  const deleteApi = async (item) => {
+    try {
+      const DeleteCart = await fetchData?.Delete_Cart(item?.in_cart?.id);
+      if (DeleteCart?.success == true) {
+        GetProductList(CategoryData?.CategoryList?._id, selectItem);
+        ToastAndroid.show('successfully!! ,Item Removed from Cart', ToastAndroid.SHORT);
+        get_Cart_Count()
+      } else {
+        console.log('Failed To Delete Cart');
+      }
+    } catch (error) {
+      console.log('catch in deleteApi : ', error);
+    }
+  };
+
+  // Remove Cart
+  const removeCart = async (item) => {
+    try {
+      const Quantity = item?.in_cart?.quantity - 1;
+      if (Quantity == 0) {
+        deleteApi(item)
+      } else {
+        const data = {
+          quantity: Quantity,
+        };
+        const Cart_item_Update = await fetchData?.Add_To_Cart(data, item?.in_cart?.id);
+        if (Cart_item_Update?.success == true) {
+          GetProductList(CategoryData?.CategoryList?._id, selectItem);
+        } else {
+          console.log('Failed To Add To Cart');
+        }
+      }
+    } catch (error) {
+      console.log('catch in removeCart : ', error);
+    }
+  };
+
+  // Add To Cart
+  const AddToCartApi = async item => {
+    try {
+      const Quantity = item?.in_cart?.quantity + 1;
+      const data = {
+        quantity: Quantity,
+      };
+      const Cart_item_Update = await fetchData?.Add_To_Cart(data, item?.in_cart?.id);
+      if (Cart_item_Update?.success == true) {
+        GetProductList(CategoryData?.CategoryList?._id, selectItem);
+      } else {
+        console.log('Failed To Add To Cart');
+      }
+    } catch (error) {
+      console.log('catch in AddToCart : ', error);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -193,7 +273,7 @@ const ProductListing = ({ route, navigation }) => {
                 color: Color.black,
                 fontFamily: Manrope.SemiBold,
               }}>
-              {CategoryData?.CategoryList?.cat_name}
+              {CategoryData?.CategoryList?.name}
             </Text>
           </View>
           <View
@@ -206,19 +286,22 @@ const ProductListing = ({ route, navigation }) => {
             <TouchableOpacity
               style={{ paddingHorizontal: 20 }}
               onPress={() => navigation.navigate('MyCart')}>
-              <Badge
-                style={{
-                  position: 'absolute',
-                  zIndex: 1,
-                  top: -15,
-                  right: 15,
-                  backgroundColor: Color.red,
-                  color: Color.white,
-                  fontFamily: Manrope.Bold,
-                  fontSize: 13,
-                }}>
-                {cart_count ? cart_count : 0}
-              </Badge>
+              {cart_count == 0 ? null : (
+                <Badge
+                  style={{
+                    position: 'absolute',
+                    zIndex: 1,
+                    top: -15,
+                    right: 15,
+                    backgroundColor: Color.red,
+                    color: Color.white,
+                    fontFamily: Manrope.Bold,
+                    fontSize: 13,
+                  }}>
+                  {cart_count ? cart_count : 0}
+                </Badge>
+              )}
+
               <Iconviewcomponent
                 Icontag={'Feather'}
                 iconname={'shopping-cart'}
@@ -238,7 +321,7 @@ const ProductListing = ({ route, navigation }) => {
             </TouchableOpacity>
           </View>
         </View>
-        <View style={{ width: scr_width, marginVertical: 10 }}>
+        <View style={{ width: scr_width }}>
           <FlatList
             data={filterData}
             keyExtractor={(item, index) => item + index}
@@ -259,7 +342,9 @@ const ProductListing = ({ route, navigation }) => {
                     padding: 5,
                     borderRadius: 30,
                     alignItems: 'center',
-                    backgroundColor: selectItemBg, borderColor: Color.primary, borderWidth: 1
+                    backgroundColor: selectItemBg,
+                    borderColor: Color.primary,
+                    borderWidth: 1,
                   }}>
                   <Text
                     style={{
@@ -423,7 +508,11 @@ const ProductListing = ({ route, navigation }) => {
                                       style={{
                                         paddingLeft: 10,
                                         paddingRight: 10,
-                                      }}>
+                                      }}
+                                      onPress={() => {
+                                        removeCart(item)
+                                      }}
+                                    >
                                       <Text
                                         style={{
                                           color: Color?.white,
@@ -439,13 +528,17 @@ const ProductListing = ({ route, navigation }) => {
                                         fontSize: 15,
                                         fontFamily: Manrope.SemiBold,
                                       }}>
-                                      01
+                                      {item?.in_cart?.quantity ? item?.in_cart?.quantity : 1}
                                     </Text>
                                     <TouchableOpacity
                                       style={{
                                         paddingLeft: 10,
                                         paddingRight: 10,
-                                      }}>
+                                      }}
+                                      onPress={() => {
+                                        AddToCartApi(item)
+                                      }}
+                                    >
                                       <Text
                                         style={{
                                           color: Color?.white,

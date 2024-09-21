@@ -66,7 +66,7 @@ const MyDrawer = () => {
 };
 
 const App = () => {
-
+  
   return (
     <Provider store={Store}>
       <MyDrawer />
@@ -163,7 +163,7 @@ const MainApp = () => {
             ),
           })}
         />
-
+       
         <Stack.Screen
           name="TermsandConditions"
           component={TermsandConditions}
@@ -254,25 +254,10 @@ const MainApp = () => {
             ),
           })}
         />
-
         <Stack.Screen
           name="NotificationScreen"
           component={Notification_Screen}
-          options={({ navigation, route }) => ({
-            headerTitle: 'NotificationScreen',
-            headerTitleStyle: { color: Color.black },
-            headerStyle: { backgroundColor: Color.white, elevation: 1 },
-            headerLeft: () => (
-              <View style={{ marginHorizontal: 10 }}>
-                <Icon
-                  name="arrow-back"
-                  size={30}
-                  color={Color.black}
-                  onPress={() => navigation.goBack()}
-                />
-              </View>
-            ),
-          })}
+          options={{headerShown: false}}
         />
 
         {/* 

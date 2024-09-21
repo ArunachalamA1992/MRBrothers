@@ -86,6 +86,7 @@ const ProductDetails = ({navigation,route}) => {
         },
 
     ]);
+    const [similar,setsimilar] = useState([]);
 
     const selectedItem = (item) => {
         try {
@@ -108,16 +109,36 @@ const ProductDetails = ({navigation,route}) => {
             const productDetails = await fetchData?.Product_Details(id);
             if(productDetails?.success ==true ) 
             {
+              console.log("productDetailsproductDetailsproductDetails",productDetails?.data?.category?._id);
+                GetSimilarProduct(productDetails?.data?.category?._id)
                 setproductdetails(productDetails?.data);
             }
         } catch (error) {
             console.log('catch in get_product_details : ', error);
         }
     }
+    // get Similar Product 
+    const GetSimilarProduct = async (id) =>{     
+      try {
+        const Product_Details = await fetchData?.GetAllProductlist(id);
+        if (Product_Details?.success == true) {
+          console.log("@@@@@@@@@@@@@@@",productdetails?.data);
+          
+          setsimilar(Product_Details?.data);
+        } else {
+          setsimilar([]);
+          console.log('Failed To Get Product List', Product_Details);
+        }
+      } catch (error) {
+        console.log('catch in GetProductList : ', error);
+      }
+    }
+
     useEffect(() => {
         if(Routedata?.Productdata)
         {
-            getProductDetails(Routedata?.Productdata)
+            getProductDetails(Routedata?.Productdata);
+            // GetSimilarProduct(Routedata?.Productdata)
         }
     }, [])
 
@@ -1106,11 +1127,11 @@ const ProductDetails = ({navigation,route}) => {
                               marginBottom: 30,
                             }}>
                             <FlatList
-                              data={similarData}
+                              data={similar}
                               horizontal
                               showsHorizontalScrollIndicator={false}
                               renderItem={({item, index}) => {
-                                console.log('lsdgjlsdjlgjsdlgj  ', item);
+                                console.log('*****************  ', item);
 
                                 // var selectItemBg = selectWeightItem === item.id ? Color.gold : Color.white;
                                 return (
@@ -1129,7 +1150,7 @@ const ProductDetails = ({navigation,route}) => {
                                     }}>
                                     <View>
                                       <Image
-                                        source={item.similar_image}
+                                        source={{uri:item?.images[0]}}
                                         style={{
                                           width: 140,
                                           height: 150,
@@ -1150,8 +1171,8 @@ const ProductDetails = ({navigation,route}) => {
                                           fontFamily: Manrope.SemiBold,
                                           letterSpacing: 0.5,
                                         }}
-                                        numberOfLines={2}>
-                                        {item.similar_name}
+                                        numberOfLines={1}>
+                                        {item.name}
                                       </Text>
                                       <Text
                                         style={{
@@ -1162,7 +1183,7 @@ const ProductDetails = ({navigation,route}) => {
                                           letterSpacing: 0.5,
                                         }}
                                         numberOfLines={1}>
-                                        {item.similar_pro_Id}
+                                        {item?.product_code}
                                       </Text>
                                     </View>
                                   </TouchableOpacity>
