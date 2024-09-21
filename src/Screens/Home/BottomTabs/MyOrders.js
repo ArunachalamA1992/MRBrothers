@@ -1,5 +1,5 @@
 //import liraries
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -23,20 +23,23 @@ import {
 } from 'react-native';
 
 import Color from '../../../Global/Color';
-import {Iconviewcomponent} from '../../../Components/Icontag';
-import {Manrope} from '../../../Global/FontFamily';
-import {scr_height, scr_width} from '../../../Utils/Dimensions';
+import { Iconviewcomponent } from '../../../Components/Icontag';
+import { Manrope } from '../../../Global/FontFamily';
+import { scr_height, scr_width } from '../../../Utils/Dimensions';
 import SwiperFlatList from 'react-native-swiper-flatlist';
-import {Badge} from 'react-native-paper';
+import { Badge } from 'react-native-paper';
 import fetchData from '../../../Config/fetchData';
+import { useDispatch, useSelector } from 'react-redux';
 
 // create a component
-const MyOrders = ({navigation}) => {
+const MyOrders = ({ navigation }) => {
+  const cart_count = useSelector(state => state.UserReducer.Cart_Count);
+
   const [height, setHeight] = useState(undefined);
   const [Myorder, setmyorder] = useState([]);
   const [shopSection] = useState([
-    {id: 1, title: 'banners', data: ['banners']},
-    {id: 2, title: 'Category', data: ['Category']},
+    { id: 1, title: 'banners', data: ['banners'] },
+    { id: 2, title: 'Category', data: ['Category'] },
   ]);
 
   const [filterData, setFilterData] = useState([
@@ -134,7 +137,7 @@ const MyOrders = ({navigation}) => {
         barStyle="light-content"
         networkActivityIndicatorVisible={true}
       />
-      <View style={{flex: 1, width: '100%', alignItems: 'center'}}>
+      <View style={{ flex: 1, width: '100%', alignItems: 'center' }}>
         <View
           style={{
             width: '100%',
@@ -154,7 +157,7 @@ const MyOrders = ({navigation}) => {
             }}>
             <TouchableOpacity
               onPress={() => navigation.goBack()}
-              style={{paddingHorizontal: 10}}>
+              style={{ paddingHorizontal: 10 }}>
               <Iconviewcomponent
                 Icontag={'AntDesign'}
                 iconname={'arrowleft'}
@@ -179,21 +182,24 @@ const MyOrders = ({navigation}) => {
               alignItems: 'center',
             }}>
             <TouchableOpacity
-              style={{paddingHorizontal: 20}}
+              style={{ paddingHorizontal: 20 }}
               onPress={() => navigation.navigate('MyCart')}>
-              <Badge
-                style={{
-                  position: 'absolute',
-                  zIndex: 1,
-                  top: -15,
-                  right: 15,
-                  backgroundColor: Color.red,
-                  color: Color.white,
-                  fontFamily: Manrope.Bold,
-                  fontSize: 13,
-                }}>
-                {/* {cart_count ? cart_count : 0} */}1
-              </Badge>
+              {cart_count == 0 ? null : (
+                <Badge
+                  style={{
+                    position: 'absolute',
+                    zIndex: 1,
+                    top: -15,
+                    right: 15,
+                    backgroundColor: Color.red,
+                    color: Color.white,
+                    fontFamily: Manrope.Bold,
+                    fontSize: 13,
+                  }}>
+                  {cart_count ? cart_count : 0}
+                </Badge>
+              )}
+
               <Iconviewcomponent
                 Icontag={'Feather'}
                 iconname={'shopping-cart'}
@@ -202,7 +208,7 @@ const MyOrders = ({navigation}) => {
               />
             </TouchableOpacity>
             <TouchableOpacity
-              style={{paddingHorizontal: 10}}
+              style={{ paddingHorizontal: 10 }}
               onPress={() => navigation.navigate('NotificationScreen')}>
               <Iconviewcomponent
                 Icontag={'FontAwesome'}
@@ -213,7 +219,7 @@ const MyOrders = ({navigation}) => {
             </TouchableOpacity>
           </View>
         </View>
-        <View
+        {/* <View
           style={{
             width: '90%',
             alignItems: 'center',
@@ -238,7 +244,7 @@ const MyOrders = ({navigation}) => {
               icon_color={Color.cloudyGrey}
             />
             <Text
-              style={{
+              style={{sss
                 fontSize: 16,
                 color: Color.Venus,
                 fontFamily: Manrope.Medium,
@@ -248,14 +254,14 @@ const MyOrders = ({navigation}) => {
               Search in orders
             </Text>
           </TouchableOpacity>
-        </View>
-        <View style={{width: scr_width, paddingVertical: 10}}>
+        </View> */}
+        <View style={{ width: scr_width, paddingVertical: 10 }}>
           <FlatList
             data={filterData}
             keyExtractor={(item, index) => item + index}
             horizontal
             showsHorizontalScrollIndicator={false}
-            renderItem={({item, index}) => {
+            renderItem={({ item, index }) => {
               var selectItemBg =
                 selectItem === item.id ? Color.primary : Color.white;
               return (
@@ -271,6 +277,8 @@ const MyOrders = ({navigation}) => {
                     borderRadius: 30,
                     alignItems: 'center',
                     backgroundColor: selectItemBg,
+                    borderColor: Color.primary,
+                    borderWidth: 1,
                   }}>
                   <Text
                     style={{
@@ -284,11 +292,11 @@ const MyOrders = ({navigation}) => {
                 </TouchableOpacity>
               );
             }}
-            style={{margin: 5}}
+            style={{ margin: 5 }}
           />
         </View>
 
-        <View style={{flex: 1, alignItems: 'center'}}>
+        <View style={{ flex: 1, alignItems: 'center' }}>
           <Animated.SectionList
             sections={shopSection}
             scrollEnabled={true}
@@ -297,7 +305,7 @@ const MyOrders = ({navigation}) => {
             scrollEventThrottle={1}
             nestedScrollEnabled
             initialNumToRender={5}
-            renderItem={({item}) => {
+            renderItem={({ item }) => {
               switch (item) {
                 case 'banners':
                   return (
@@ -311,7 +319,7 @@ const MyOrders = ({navigation}) => {
                         data={Myorder}
                         keyExtractor={(item, index) => item + index}
                         showsVerticalScrollIndicator={false}
-                        renderItem={({item, index}) => {
+                        renderItem={({ item, index }) => {
                           return (
                             // <View
                             //   style={{
@@ -474,7 +482,7 @@ const MyOrders = ({navigation}) => {
                             //     </View>
                             //   </View>
                             // </View>
-                            <View
+                            <TouchableOpacity
                               style={{
                                 width: scr_width / 1.05,
                                 margin: 5,
@@ -482,50 +490,55 @@ const MyOrders = ({navigation}) => {
                                 marginVertical: 10,
                                 backgroundColor: Color.white,
                                 padding: 10,
-                              }}>
-                              <View style={{flexDirection: 'row'}}>
-                                <View>
+                              }}
+                              onPress={() =>
+                                navigation.navigate('OrderSummary', {
+                                  OrderData: item,
+                                })
+                              }>
+                              <View style={{ width: '100%', flexDirection: 'row' }}>
+                                <View style={{ flex: 1.5, width: 180, height: 120, justifyContent: 'center', alignItems: 'center' }}>
                                   <Image
                                     source={{
                                       uri: item?.products[0]?.product_id
                                         ?.images[0],
                                     }}
                                     style={{
-                                      width: 120,
-                                      height: 130,
+                                      width: '100%',
+                                      height: '100%',
                                       resizeMode: 'contain',
                                       borderRadius: 5,
                                     }}
                                   />
                                 </View>
-                                <View>
-                                  <View style={{gap: 10}}>
+                                <View style={{ flex: 3, justifyContent: 'flex-start', alignItems: 'flex-start' }}>
+                                  <View style={{ padding: 10 }}>
                                     <Text
                                       style={{
                                         fontSize: 16,
                                         color: Color.black,
                                         font: Manrope.Bold,
                                         textTransform: 'capitalize',
-                                        width: scr_width / 1.8,
+                                        width: scr_width / 1.8, paddingVertical: 3
                                       }}
-                                      numberOfLines={1}>
+                                      numberOfLines={2}>
                                       {item?.products[0]?.product_id?.name}
                                     </Text>
                                     <View
-                                      style={{flexDirection: 'row', gap: 5}}>
+                                      style={{ flexDirection: 'row', gap: 5 }}>
                                       <Text
                                         style={{
                                           fontSize: 14,
-                                          color: '#999999',
+                                          color: Color.cloudyGrey,
                                           fontFamily: Manrope.Regular,
                                         }}>
-                                        Product ID
+                                        Product ID -
                                       </Text>
                                       <Text
                                         style={{
-                                          fontSize: 14,
-                                          color: Color?.black,
-                                          fontFamily: Manrope.Regular,
+                                          fontSize: 15,
+                                          color: Color?.lightBlack,
+                                          fontFamily: Manrope.SemiBold,
                                           width: scr_width / 2.5,
                                         }}
                                         numberOfLines={1}>
@@ -533,20 +546,20 @@ const MyOrders = ({navigation}) => {
                                       </Text>
                                     </View>
                                     <View
-                                      style={{flexDirection: 'row', gap: 5}}>
+                                      style={{ flexDirection: 'row', gap: 5 }}>
                                       <Text
                                         style={{
                                           fontSize: 14,
-                                          color: '#666666',
+                                          color: Color.cloudyGrey,
                                           fontFamily: Manrope.Regular,
                                         }}>
                                         Quantity -
                                       </Text>
                                       <Text
                                         style={{
-                                          fontSize: 14,
-                                          color: Color?.black,
-                                          fontFamily: Manrope.Regular,
+                                          fontSize: 15,
+                                          color: Color?.lightBlack,
+                                          fontFamily: Manrope.SemiBold,
                                           width: scr_width / 2.5,
                                         }}
                                         numberOfLines={1}>
@@ -554,20 +567,20 @@ const MyOrders = ({navigation}) => {
                                       </Text>
                                     </View>
                                     <View
-                                      style={{flexDirection: 'row', gap: 5}}>
+                                      style={{ flexDirection: 'row', gap: 5 }}>
                                       <Text
                                         style={{
                                           fontSize: 14,
-                                          color: '#666666',
+                                          color: Color.cloudyGrey,
                                           fontFamily: Manrope.Regular,
                                         }}>
                                         Weight -
                                       </Text>
                                       <Text
                                         style={{
-                                          fontSize: 14,
-                                          color: Color?.black,
-                                          fontFamily: Manrope.Regular,
+                                          fontSize: 15,
+                                          color: Color?.lightBlack,
+                                          fontFamily: Manrope.SemiBold,
                                           width: scr_width / 2.5,
                                         }}
                                         numberOfLines={1}>
@@ -577,20 +590,25 @@ const MyOrders = ({navigation}) => {
                                   </View>
                                 </View>
                               </View>
-                              <View style={{flexDirection: 'row', margin: 7,gap:5}}>
+                              <View
+                                style={{
+                                  flexDirection: 'row',
+                                  margin: 7,
+                                  gap: 5,
+                                }}>
                                 <Text
                                   style={{
                                     fontSize: 14,
-                                    color: '#666666',
+                                    color: Color.cloudyGrey,
                                     fontFamily: Manrope.Regular,
                                   }}>
-                                   Order ID -
+                                  Order ID -
                                 </Text>
                                 <Text
                                   style={{
-                                    fontSize: 14,
-                                    color: Color?.black,
-                                    fontFamily: Manrope.Regular,
+                                    fontSize: 15,
+                                    color: Color?.lightBlack,
+                                    fontFamily: Manrope.SemiBold,
                                     width: scr_width / 1.4,
                                     // backgroundColor:'red'
                                   }}
@@ -598,10 +616,10 @@ const MyOrders = ({navigation}) => {
                                   #PX2356498764AJLQW
                                 </Text>
                               </View>
-                            </View>
+                            </TouchableOpacity>
                           );
                         }}
-                        style={{width: '100%'}}
+                        style={{ width: '100%' }}
                       />
                     </View>
                   );

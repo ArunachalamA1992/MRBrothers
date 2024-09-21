@@ -30,6 +30,7 @@ import { Manrope } from './Global/FontFamily';
 import ProfileView from './Screens/ProfileScreens/ProfileView';
 import MyCart from './Screens/Home/MyCart';
 import Notification_Screen from './Screens/Home/BottomTabs/Notification';
+import SelectCategory from './Screens/Home/SelectCategory';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -107,6 +108,26 @@ const MainApp = () => {
           component={ProfileView}
           options={({ navigation, route }) => ({
             headerTitle: 'Profile View',
+            headerTitleAlign: 'center',
+            headerTitleStyle: { color: Color.black },
+            headerStyle: { backgroundColor: Color.white },
+            headerLeft: () => (
+              <View style={{ marginHorizontal: 10 }}>
+                <Icon
+                  name="arrow-back"
+                  size={30}
+                  color={Color.black}
+                  onPress={() => navigation.goBack()}
+                />
+              </View>
+            ),
+          })}
+        />
+        <Stack.Screen
+          name="SelectCategory"
+          component={SelectCategory}
+          options={({ navigation, route }) => ({
+            headerTitle: 'Select Category',
             headerTitleAlign: 'center',
             headerTitleStyle: { color: Color.black },
             headerStyle: { backgroundColor: Color.white },

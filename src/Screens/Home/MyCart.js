@@ -27,9 +27,12 @@ import {LottieCheck} from '../../Components/Lottie';
 import {useNavigation} from '@react-navigation/native';
 import fetchData from '../../Config/fetchData';
 import {ToastAndroid} from 'react-native';
+import {setCartCount} from '../../Redux/user/UserAction';
+import {useDispatch, useSelector} from 'react-redux';
 
 // create a component
 const MyCart = () => {
+  const dispatch = useDispatch();
   const navigation = useNavigation();
   const [Cartdata, setCartdata] = useState([]);
   const [height, setHeight] = useState(undefined);
@@ -45,8 +48,12 @@ const MyCart = () => {
       const cart = await fetchData?.Cart_List();
       if (cart?.success == true) {
         setCartdata(cart?.data);
+        get_Cart_Count();
+        console.log('Sucess the get Api', cart);
       } else {
         if (cart?.message == 'No Data found for this request') {
+          console.log('cartcartcart', cart);
+          get_Cart_Count();
           setCartdata([]);
         } else {
           console.log('Failed To Get Cart');
@@ -54,6 +61,24 @@ const MyCart = () => {
       }
     } catch (error) {
       console.log('catch in Get_Cart : ', error);
+    }
+  };
+  const get_Cart_Count = async () => {
+    try {
+      // const Cartcount = await Cart_List
+      const Cartcount = await fetchData?.Cart_List();
+      if (Cartcount?.success == true) {
+        console.log(Cartcount?.data?.length, '{{{{');
+        dispatch(setCartCount(Cartcount?.data?.length));
+      } else {
+        if (Cartcount?.message == 'No Data found for this request') {
+          dispatch(setCartCount(0));
+        } else {
+          console.log('Failed To Get Cart');
+        }
+      }
+    } catch (error) {
+      console.log('catch in get_Cart_Count : ', error);
     }
   };
   useEffect(() => {
@@ -139,6 +164,28 @@ const MyCart = () => {
       }
     } catch (error) {
       console.log('catch in AddToCart : ', error);
+    }
+  };
+  // OrderFunction
+  const OrderFunction = async item => {
+    try {
+      let orderitem = [];
+      await Cartdata?.map(data => {
+        if (data) {
+          let obj = {
+            product_id: data?.product_id?._id,
+            quantity: data?.quantity,
+          };
+          orderitem.push(obj);
+        }
+      });
+      const order = await fetchData?.Post_Order(orderitem);
+      if (order?.success == true) {
+        setConfirmModal(true);
+        Get_Cart();
+      }
+    } catch (error) {
+      console.log('Catch in OrderFunction : ', error);
     }
   };
 
@@ -436,7 +483,10 @@ const MyCart = () => {
         {Cartdata?.length == 0 ? null : (
           <View style={{width: '100%', alignItems: 'center', bottom: 20}}>
             <TouchableOpacity
-              onPress={() => setConfirmModal(true)}
+              // onPress={() => setConfirmModal(true)}
+              onPress={() => {
+                OrderFunction(Cartdata);
+              }}
               style={{
                 width: '95%',
                 height: 50,

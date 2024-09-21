@@ -108,7 +108,9 @@ const Notification_Screen = ({route, navigation}) => {
           Notification
         </Text>
       </TouchableOpacity>
-      <ScrollView style={{flex: 1, padding: 10, gap: 10}}>
+      <ScrollView style={{flex: 1, padding: 10, gap: 10}}
+      showsVerticalScrollIndicator={false}
+      >
         {notification?.map(item => {
           return (
             <TouchableOpacity

@@ -1,4 +1,4 @@
-import {api} from './api';
+import { api } from './api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // const api_name = 'api/';
@@ -87,7 +87,7 @@ export default {
     return api.getMethod(url, accessToken);
   },
   // Cart Product Add API
-  Add_To_Cart: async (data,id) => {
+  Add_To_Cart: async (data, id) => {
     let url = `cart/${id}`;
     const accessToken = await AccessToken();
     return api.putMethod(url, data, accessToken);
@@ -105,10 +105,15 @@ export default {
     return api.deleteMethod(url, accessToken);
   },
   // Product List API
-  Product_List: async (id,category) => {
+  Product_List: async (id, category) => {
     let url = `product?gender=${category}&category=${id}`;
     // let url = `product?category=${id}`;
     // console.log('sample',sample);
+    const accessToken = await AccessToken();
+    return api.getMethod(url, accessToken);
+  },
+  GetAllProductlist: async (id) => {
+    let url = `product?category=${id}`;
     const accessToken = await AccessToken();
     return api.getMethod(url, accessToken);
   },
@@ -128,6 +133,24 @@ export default {
   MarkAsRead: async data => {
     let url = `notification`;
     const accessToken = await AccessToken();
-    return api.postMethod(url,data, accessToken);
+    return api.postMethod(url, data, accessToken);
+  },
+  // Order API
+  Post_Order: async data => {
+    let url = `order`;
+    const accessToken = await AccessToken();
+    return api.postMethod(url, data, accessToken);
+  },
+  // Get_Banner_Section 
+  Get_Banner: async () => {
+    let url = 'banner';
+    const accessToken = await AccessToken();
+    return api.getMethod(url, accessToken);
+  },
+  // GET Order Details :
+  Get_Order_Details: async id => {
+    let url = `order/${id}`;
+    const accessToken = await AccessToken();
+    return api.getMethod(url, accessToken);
   }
 };
