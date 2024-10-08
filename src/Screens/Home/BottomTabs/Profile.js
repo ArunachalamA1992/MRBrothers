@@ -1,5 +1,5 @@
 //import liraries
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -20,19 +20,34 @@ import {
   NativeModules,
   TextInput,
   ImageBackground,
+  ToastAndroid,
 } from 'react-native';
 import Color from '../../../Global/Color';
-import {useNavigation} from '@react-navigation/native';
-import {Manrope} from '../../../Global/FontFamily';
-import {Iconviewcomponent} from '../../../Components/Icontag';
-import {useDispatch, useSelector} from 'react-redux';
+import { useNavigation } from '@react-navigation/native';
+import { Manrope } from '../../../Global/FontFamily';
+import { Iconviewcomponent } from '../../../Components/Icontag';
+import { useDispatch, useSelector } from 'react-redux';
+import fetchData from '../../../Config/fetchData';
 // create a component
 const Profile = () => {
   const userData = useSelector(state => state.UserReducer.userData);
 
   const navigation = useNavigation();
   const [netInfo_State, setNetinfo] = useState(true);
-
+  const Getlogout = async () => {
+    try {
+      const logoutApi = await fetchData?.Logout();
+      if (logoutApi?.success == true) {
+        ToastAndroid.show(logoutApi?.message, ToastAndroid.SHORT);
+        navigation.navigate('Auth')
+      } else {
+        console.log('catch in Getlogout ddd : ', logoutApi);
+        ToastAndroid.show(logoutApi?.message, ToastAndroid.SHORT);
+      }
+    } catch (error) {
+      console.log('catch in Getlogout : ', error);
+    }
+  }
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor={Color.primary} barStyle={'light-content'} />
@@ -53,10 +68,10 @@ const Profile = () => {
             padding: 10,
             marginTop: Platform.OS == 'ios' ? 80 : 0,
           }}>
-          <Text style={{color: 'white'}}>No Internet Connection</Text>
+          <Text style={{ color: 'white' }}>No Internet Connection</Text>
         </Animated.View>
       )}
-      <View style={{width: '100%'}}>
+      <View style={{ width: '100%' }}>
         <View
           style={{
             flexDirection: 'row',
@@ -65,7 +80,7 @@ const Profile = () => {
             paddingVertical: 30,
           }}>
           <TouchableOpacity
-            style={{paddingHorizontal: 20}}
+            style={{ paddingHorizontal: 20 }}
             onPress={() => navigation.goBack()}>
             <Iconviewcomponent
               Icontag={'AntDesign'}
@@ -85,7 +100,7 @@ const Profile = () => {
         </View>
       </View>
 
-      <View style={{flex: 1, backgroundColor: Color.white}}>
+      <View style={{ flex: 1, backgroundColor: Color.white }}>
         <ScrollView showsVerticalScrollIndicator={false}>
           <View
             style={{
@@ -94,10 +109,10 @@ const Profile = () => {
               alignItems: 'center',
               marginVertical: 10,
             }}>
-            <View style={{paddingHorizontal: 20}}>
+            <View style={{ paddingHorizontal: 20 }}>
               <Image
                 source={require('../../../assets/Logos/app_icon.png')}
-                style={{width: 80, height: 80, resizeMode: 'contain'}}
+                style={{ width: 80, height: 80, resizeMode: 'contain' }}
               />
             </View>
             <View>
@@ -182,7 +197,7 @@ const Profile = () => {
                 Your Profile
               </Text>
             </View>
-            <View style={{paddingHorizontal: 10}}>
+            <View style={{ paddingHorizontal: 10 }}>
               <Iconviewcomponent
                 Icontag={'Ionicons'}
                 iconname={'chevron-forward'}
@@ -241,7 +256,7 @@ const Profile = () => {
                 Orders
               </Text>
             </View>
-            <View style={{paddingHorizontal: 10}}>
+            <View style={{ paddingHorizontal: 10 }}>
               <Iconviewcomponent
                 Icontag={'Ionicons'}
                 iconname={'chevron-forward'}
@@ -257,7 +272,7 @@ const Profile = () => {
               backgroundColor: Color.Venus,
               marginVertical: 5,
             }}></View>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={{
               width: '95%',
               flexDirection: 'row',
@@ -299,7 +314,7 @@ const Profile = () => {
                 Shop Address
               </Text>
             </View>
-            <View style={{paddingHorizontal: 10}}>
+            <View style={{ paddingHorizontal: 10 }}>
               <Iconviewcomponent
                 Icontag={'Ionicons'}
                 iconname={'chevron-forward'}
@@ -307,14 +322,14 @@ const Profile = () => {
                 icon_color={Color.cloudyGrey}
               />
             </View>
-          </TouchableOpacity>
-          <View
+          </TouchableOpacity> */}
+          {/* <View
             style={{
               width: '100%',
               height: 0.5,
               backgroundColor: Color.Venus,
               marginVertical: 5,
-            }}></View>
+            }}></View> */}
           <TouchableOpacity
             onPress={() => navigation.navigate('PrivacyPolicy')}
             style={{
@@ -358,7 +373,7 @@ const Profile = () => {
                 Privacy Policy
               </Text>
             </View>
-            <View style={{paddingHorizontal: 10}}>
+            <View style={{ paddingHorizontal: 10 }}>
               <Iconviewcomponent
                 Icontag={'Ionicons'}
                 iconname={'chevron-forward'}
@@ -418,7 +433,7 @@ const Profile = () => {
                 Terms & Conditions
               </Text>
             </View>
-            <View style={{paddingHorizontal: 10}}>
+            <View style={{ paddingHorizontal: 10 }}>
               <Iconviewcomponent
                 Icontag={'Ionicons'}
                 iconname={'chevron-forward'}
@@ -477,7 +492,7 @@ const Profile = () => {
                 About Us
               </Text>
             </View>
-            <View style={{paddingHorizontal: 10}}>
+            <View style={{ paddingHorizontal: 10 }}>
               <Iconviewcomponent
                 Icontag={'Ionicons'}
                 iconname={'chevron-forward'}
@@ -536,7 +551,7 @@ const Profile = () => {
                 Contact Us
               </Text>
             </View>
-            <View style={{paddingHorizontal: 10}}>
+            <View style={{ paddingHorizontal: 10 }}>
               <Iconviewcomponent
                 Icontag={'Ionicons'}
                 iconname={'chevron-forward'}
@@ -553,7 +568,7 @@ const Profile = () => {
               marginVertical: 5,
             }}></View>
           <TouchableOpacity
-            onPress={() => navigation.navigate('Auth')}
+            onPress={() => Getlogout()}
             style={{
               width: '95%',
               flexDirection: 'row',
@@ -595,7 +610,7 @@ const Profile = () => {
                 Log Out
               </Text>
             </View>
-            <View style={{paddingHorizontal: 10}}>
+            <View style={{ paddingHorizontal: 10 }}>
               <Iconviewcomponent
                 Icontag={'Ionicons'}
                 iconname={'chevron-forward'}

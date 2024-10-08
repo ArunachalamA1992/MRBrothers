@@ -1,7 +1,7 @@
 //import liraries
-import { useNavigation } from '@react-navigation/native';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, ImageBackground, ToastAndroid } from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {ActivityIndicator, ImageBackground, ToastAndroid} from 'react-native';
 import {
   Image,
   StyleSheet,
@@ -16,25 +16,26 @@ import {
   Modal,
   Button,
   Alert,
+  BackHandler,
 } from 'react-native';
 import {useDispatch} from 'react-redux';
 import RNOtpVerify from 'react-native-otp-verify';
 import Color from '../../Global/Color';
 import {Manrope} from '../../Global/FontFamily';
 import OTPInput from '../../Components/OTPInput';
-import { scr_height, scr_width } from './../../Utils/Dimensions';
+import {scr_height, scr_width} from './../../Utils/Dimensions';
 import fetchData from '../../Config/fetchData';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { setUserData } from '../../Redux';
+import {setUserData} from '../../Redux';
 
-const DismissKeyboard = ({ children }) => (
+const DismissKeyboard = ({children}) => (
   <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
     {children}
   </TouchableWithoutFeedback>
 );
 
 // create a component
-const OTPScreen = ({ route, AppState }) => {
+const OTPScreen = ({route, AppState}) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const Route_Data = route?.params;
@@ -70,13 +71,25 @@ const OTPScreen = ({ route, AppState }) => {
       clearInterval(interval);
     };
   }, [seconds]);
-
+  useEffect(() => {
+    const backAction = () => {
+      if (Route_Data?.IS_Mobile_number == true) {
+        navigation.navigate('Auth');
+      } else {
+        navigation.goBack();
+      }
+    };
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+    return () => backHandler.remove();
+  }, []);
   useEffect(() => {
     if (Platform.OS === 'android') {
       RNOtpVerify.getHash()
         .then(hash => console.log('Hash:', hash))
         .catch(error => console.error('Error getting hash:', error));
-
       startListeningForOtp();
     }
   }, []);
@@ -175,6 +188,7 @@ const OTPScreen = ({ route, AppState }) => {
       console.log('catch in New_User_OTP_Verify : ', error);
     }
   };
+
   const Go_Register = async () => {
     try {
       setLoading(true);
@@ -219,45 +233,43 @@ const OTPScreen = ({ route, AppState }) => {
       console.log('catch in New_User_OTP_Verify : ', error);
     }
   };
-  const ResendOtp = async (data) => {
+
+  const ResendOtp = async data => {
     try {
-      setSeconds(30)
+      setSeconds(30);
       const Data = {
-        mobile: data
-      }
+        mobile: data,
+      };
       const UserLogin = await fetchData?.User_Login(Data, null);
       if (UserLogin?.success == true) {
-        ToastAndroid.show("OTP send successfully", ToastAndroid.SHORT)
+        ToastAndroid.show('OTP send successfully', ToastAndroid.SHORT);
         await AsyncStorage.setItem('ACCESS_TOKEN', UserLogin?.token);
       } else {
-        ToastAndroid.show("Something went wrong", ToastAndroid.SHORT)
+        ToastAndroid.show('Something went wrong', ToastAndroid.SHORT);
       }
     } catch (error) {
-      console.log("catch in ResendOtp : ", error);
-      ToastAndroid.show("Something went wrong", ToastAndroid.SHORT)
-
+      console.log('catch in ResendOtp : ', error);
+      ToastAndroid.show('Something went wrong', ToastAndroid.SHORT);
     }
-  }
-  const Register_resend_otp = async (data) => {
+  };
+
+  const Register_resend_otp = async data => {
     try {
       var Data = {
         mobile: data,
       };
       const New_Mobile_Number = await fetchData?.new_mobilenumber(Data, null);
       if (New_Mobile_Number?.success == true) {
-        ToastAndroid.show("OTP send successfully", ToastAndroid.SHORT)
+        ToastAndroid.show('OTP send successfully', ToastAndroid.SHORT);
         await AsyncStorage.setItem('ACCESS_TOKEN', New_Mobile_Number?.token);
       } else {
-        ToastAndroid.show("Something went wrong", ToastAndroid.SHORT)
+        ToastAndroid.show('Something went wrong', ToastAndroid.SHORT);
       }
-
     } catch (error) {
-      console.log("catch in New ResendOtp : ", error);
-      ToastAndroid.show("Something went wrong", ToastAndroid.SHORT)
-
-
+      console.log('catch in New ResendOtp : ', error);
+      ToastAndroid.show('Something went wrong', ToastAndroid.SHORT);
     }
-  }
+  };
 
   return (
     <ScrollView
@@ -359,10 +371,10 @@ const OTPScreen = ({ route, AppState }) => {
               </Text>
             )}
           </TouchableOpacity>
-          <View style={{ paddingTop: 10 }}>
+          <View style={{paddingTop: 10}}>
             {seconds > 0 || minutes > 0 ? (
               <View style={styles.noReceivecodeView}>
-                <Text>Request code again : </Text>
+                <Text style={{color: Color?.black}}>Request code again : </Text>
                 <Text style={styles.noReceiveText}>
                   {minutes < 10 ? `0${minutes}` : minutes}:
                   {seconds < 10 ? `0${seconds}` : seconds}
@@ -373,14 +385,16 @@ const OTPScreen = ({ route, AppState }) => {
                 <Text style={styles.resendOtp}>
                   {' '}
                   Request code again{' '}
-                  <Text style={{ color: Color.primary }}
+                  <Text
+                    style={{color: Color.primary}}
                     onPress={() => {
                       Route_Data?.IS_Mobile_number == false
                         ? Register_resend_otp(Route_Data?.Mobile_Number)
                         : ResendOtp(Route_Data?.Mobile_Number);
-
-                    }}
-                  > Resend OTP</Text>
+                    }}>
+                    {' '}
+                    Resend OTP
+                  </Text>
                 </Text>
               </View>
             )}

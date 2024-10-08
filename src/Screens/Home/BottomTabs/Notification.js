@@ -13,42 +13,11 @@ import {Manrope} from '../../../Global/FontFamily';
 import fetchData from '../../../Config/fetchData';
 
 const Notification_Screen = ({route, navigation}) => {
-  // const NotificationScreen = [
-  //   {
-  //     id: 1,
-  //     title: 'Notification',
-  //     message: 'Notification Message',
-  //     createdAt: '2024-09-09T06:15:45.485Z',
-  //   },
-  //   {
-  //     id: 2,
-  //     title: 'Notification',
-  //     message: 'Notification Message',
-  //     createdAt: '2024-09-09T06:15:45.485Z',
-  //   },
-  //   {
-  //     id: 3,
-  //     title: 'Notification',
-  //     message: 'Notification Message',
-  //     createdAt: '2024-09-09T06:15:45.485Z',
-  //   },
-  //   {
-  //     id: 4,
-  //     title: 'Notification',
-  //     message: 'Notification Message',
-  //     createdAt: '2024-09-09T06:15:45.485Z',
-  //   },
-  //   {
-  //     id: 5,
-  //     title: 'Notification',
-  //     message: 'Notification Message',
-  //     createdAt: '2024-09-09T06:15:45.485Z',
-  //   },
-  // ];
   const [notification, setNotification] = useState([]);
   const GetNotification = async () => {
     const Notification = await fetchData?.Notification();
     if (Notification?.success == true) {
+      console.log(Notification, 'Notification');
       setNotification(Notification?.data);
     } else {
       setNotification([]);
@@ -72,7 +41,10 @@ const Notification_Screen = ({route, navigation}) => {
     }
     return `${diffInDays} day${diffInDays === 1 ? '' : 's'} ago`;
   }
+  // MarkasRead
   const MarkasRead = async item => {
+    console.log(item?.data, 'item');
+
     try {
       const Data = {
         id: [item?._id],
@@ -80,7 +52,24 @@ const Notification_Screen = ({route, navigation}) => {
       const MARK_AS_READ = await fetchData?.MarkAsRead(Data);
       if (MARK_AS_READ?.success == true) {
         GetNotification();
+        navigation.navigate('OrderSummary', {
+          OrderData: item?.data,
+        });
       } else {
+        ToastAndroid.show('Something went wrong', ToastAndroid.SHORT);
+      }
+    } catch (error) {
+      ToastAndroid.show('Something went wrong', ToastAndroid.SHORT);
+    }
+  };
+  // Markallasread
+  const Markallasread = async () => {
+    try {
+      const MARK_AS_READ = await fetchData?.MarkAllAsRead();
+      if (MARK_AS_READ?.success == true) {
+        GetNotification();
+      } else {
+        console.log(MARK_AS_READ, 'MARK_AS_READ');
         ToastAndroid.show('Something went wrong', ToastAndroid.SHORT);
       }
     } catch (error) {
@@ -90,32 +79,53 @@ const Notification_Screen = ({route, navigation}) => {
 
   return (
     <View style={{flex: 1, backgroundColor: 'white', padding: 15}}>
-      <TouchableOpacity
-        style={{flexDirection: 'row', alignItems: 'center', gap: 20}}
-        onPress={() => navigation.goBack()}>
-        <Iconviewcomponent
-          Icontag={'AntDesign'}
-          iconname={'arrowleft'}
-          icon_size={24}
-          icon_color={Color.black}
-        />
-        <Text
-          style={{
-            fontSize: 20,
-            color: Color.black,
-            fontFamily: Manrope.SemiBold,
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}>
+        <TouchableOpacity
+          style={{flexDirection: 'row', alignItems: 'center', gap: 20}}
+          onPress={() => navigation.goBack()}>
+          <Iconviewcomponent
+            Icontag={'AntDesign'}
+            iconname={'arrowleft'}
+            icon_size={24}
+            icon_color={Color.black}
+          />
+          <Text
+            style={{
+              fontSize: 20,
+              color: Color.black,
+              fontFamily: Manrope.SemiBold,
+            }}>
+            Notification
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            Markallasread();
           }}>
-          Notification
-        </Text>
-      </TouchableOpacity>
-      <ScrollView style={{flex: 1, padding: 10, gap: 10}}
-      showsVerticalScrollIndicator={false}
-      >
+          <Text
+            style={{
+              fontSize: 12,
+              color: Color?.primary,
+              fontFamily: Manrope.SemiBold,
+              textTransform: 'capitalize',
+            }}>
+            Mark all as read
+          </Text>
+        </TouchableOpacity>
+      </View>
+      <ScrollView
+        style={{flex: 1, padding: 10, gap: 10}}
+        showsVerticalScrollIndicator={false}>
         {notification?.map(item => {
           return (
             <TouchableOpacity
               style={{
-                borderColor:Color?.primary,
+                borderColor: item?.read_at ? Color?.grey : Color?.primary,
                 borderWidth: 1,
                 borderRadius: 10,
                 gap: 10,
@@ -125,8 +135,24 @@ const Notification_Screen = ({route, navigation}) => {
               }}
               onPress={() => MarkasRead(item)}>
               <View style={{alignItems: 'flex-start', gap: 5}}>
-                <Text style={{fontSize: 16,color:Color?.primary,fontFamily:Manrope.SemiBold,textTransform:'capitalize'}}>{item.msg_type}</Text>
-                <Text style={{fontSize: 14,fontFamily:Manrope.Medium,textTransform:'capitalize',color:Color?.black}}>{item.content}</Text>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    color: item?.read_at ? Color?.grey : Color?.primary,
+                    fontFamily: Manrope.SemiBold,
+                    textTransform: 'capitalize',
+                  }}>
+                  {item.msg_type}
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 14,
+                    fontFamily: Manrope.Medium,
+                    textTransform: 'capitalize',
+                    color: Color?.black,
+                  }}>
+                  {item.content}
+                </Text>
               </View>
               <View style={{alignItems: 'flex-end', padding: 5}}>
                 <Text>{formatTimeAgo(item.createdAt)}</Text>

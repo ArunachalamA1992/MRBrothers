@@ -1,4 +1,4 @@
-import { api } from './api';
+import {api} from './api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // const api_name = 'api/';
@@ -17,21 +17,21 @@ const AccessToken = async () => {
 };
 
 export default {
-
-  // GET CITY API 
+  // GET CITY API
   City_List: async () => {
     let url = 'location/city';
     return api.getMethod(url);
   },
-  City_List_Place: async (id) => {
+  // GET CITY PLACE API
+  City_List_Place: async id => {
     let url = `location/city/${id}`;
     return api.getMethod(url);
   },
+  // GET STATE API
   State_List: async () => {
     let url = 'location/state';
     return api.getMethod(url);
   },
-
   // New Mobile_Number Sent OTP API
   new_mobilenumber: data => {
     console.log('Enter the new fun', data);
@@ -66,7 +66,6 @@ export default {
     const accessToken = await AccessToken();
     return api.postMethod(url, data, accessToken);
   },
-
   // Category List API
   Category_List: async () => {
     let url = 'category';
@@ -79,7 +78,6 @@ export default {
     const accessToken = await AccessToken();
     return api.getMethod(url, accessToken);
   },
-
   // GET Product Details API
   Product_Details: async id => {
     let url = `product/${id}`;
@@ -93,7 +91,7 @@ export default {
     return api.putMethod(url, data, accessToken);
   },
   // NEW Cart Product Add API
-  New_Add_To_Cart: async (data) => {
+  New_Add_To_Cart: async data => {
     let url = `cart`;
     const accessToken = await AccessToken();
     return api.postMethod(url, data, accessToken);
@@ -112,14 +110,15 @@ export default {
     const accessToken = await AccessToken();
     return api.getMethod(url, accessToken);
   },
-  GetAllProductlist: async (id) => {
+  // Get All Product List
+  GetAllProductlist: async id => {
     let url = `product?category=${id}`;
     const accessToken = await AccessToken();
     return api.getMethod(url, accessToken);
   },
   // GET My Orders API
-  MyOrders: async () => {
-    let url = 'order';
+  MyOrders: async id => {
+    let url = `order?status=${id}`;
     const accessToken = await AccessToken();
     return api.getMethod(url, accessToken);
   },
@@ -135,13 +134,25 @@ export default {
     const accessToken = await AccessToken();
     return api.postMethod(url, data, accessToken);
   },
+  // NOTIFICATION MARK ALL AS READ API
+  MarkAllAsRead: async () => {
+    let url = `notification`;
+    const accessToken = await AccessToken();
+    return api.putMethodNotification(url, accessToken);
+  },
+  // Notification Count API
+  NotificationCount: async () => {
+    let url = 'notification/count';
+    const accessToken = await AccessToken();
+    return api.getMethod(url, accessToken);
+  },
   // Order API
   Post_Order: async data => {
     let url = `order`;
     const accessToken = await AccessToken();
     return api.postMethod(url, data, accessToken);
   },
-  // Get_Banner_Section 
+  // Get_Banner_Section
   Get_Banner: async () => {
     let url = 'banner';
     const accessToken = await AccessToken();
@@ -152,5 +163,23 @@ export default {
     let url = `order/${id}`;
     const accessToken = await AccessToken();
     return api.getMethod(url, accessToken);
-  }
+  },
+  // GET SUB CATEGORIES API FUNCTION :
+  Get_SubCategories: async id => {
+    let url = `sub-category?category=${id}`;
+    const accessToken = await AccessToken();
+    return api.getMethod(url, accessToken);
+  },
+  // LOGOUT API
+  Logout: async () => {
+    let url = 'auth/user/logout';
+    const accessToken = await AccessToken();
+    return api.getMethod(url, accessToken);
+  },
+  // GET QR CODE API
+  Get_QR_Code: async () => {
+    let url = 'qrcode?status=1';
+    const accessToken = await AccessToken();
+    return api.getMethod(url, accessToken);
+  },
 };

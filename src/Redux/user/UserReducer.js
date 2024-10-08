@@ -1,12 +1,14 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
+  SET_CART,
   SET_CART_COUNT,
   SET_USER_DATA,
 } from './UserActionTypes';
 
 const initialState = {
   userData: {},
-  Cart_Count:0
+  Cart_Count:0,
+  cart : null
 };
 
 const storeUserData = async UserState => {
@@ -33,6 +35,11 @@ const UserReducer = (state = initialState, action) => {
       return {
         ...state,
         Cart_Count: action.payload,
+      };
+    case SET_CART:
+      return {
+        ...state,
+        cart: action.payload,
       };
     default:
       return state;

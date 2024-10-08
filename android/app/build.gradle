@@ -1,4 +1,5 @@
-apply plugin: "com.android.application"
+apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services' 
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
 
@@ -112,6 +113,8 @@ dependencies {
     implementation("com.facebook.react:react-android")
     implementation project(':react-native-otp-verify')
     implementation project(':react-native-vector-icons')
+    implementation(platform("com.google.firebase:firebase-bom:33.3.0"))
+    implementation("com.google.firebase:firebase-analytics")
 
            // For animated GIF support
     implementation 'com.facebook.fresco:fresco:3.1.3'

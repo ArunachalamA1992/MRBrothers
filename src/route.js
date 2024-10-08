@@ -1,13 +1,13 @@
-import React, { useEffect } from 'react';
-import { Text, View } from 'react-native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createStackNavigator } from '@react-navigation/stack';
+import React, {useEffect} from 'react';
+import {Text, View} from 'react-native';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {createStackNavigator} from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { useDispatch, useSelector } from 'react-redux';
-import { setDataCount, setUserData } from './Redux';
+import {useDispatch, useSelector} from 'react-redux';
+import {setDataCount, setUserData} from './Redux';
 import HomeScreen from './Screens/Home/HomeScreen';
 import Color from './Global/Color';
-import { Manrope } from './Global/FontFamily';
+import {Manrope} from './Global/FontFamily';
 import ProductDetails from './Screens/Home/ProductDetails';
 import AboutUs from './Screens/SideMenu/AboutUs';
 import ContactUs from './Screens/SideMenu/ContactUs';
@@ -17,7 +17,7 @@ import MyOrders from './Screens/Home/BottomTabs/MyOrders';
 import Profile from './Screens/Home/BottomTabs/Profile';
 import Login from './Screens/Auth/Login';
 import OTPScreen from './Screens/Auth/OTPScreen';
-import { Iconviewcomponent } from './Components/Icontag';
+import {Iconviewcomponent} from './Components/Icontag';
 import Register from './Screens/Auth/Register';
 import StoreRegister from './Screens/Auth/StoreRegister';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -33,47 +33,43 @@ export const HomeStack = () => {
       <Stack.Screen
         name="Home"
         component={HomeScreen}
-        options={{ headerShown: false }}
+        options={{headerShown: false}}
       />
       <Stack.Screen
         name="ProductDetails"
         component={ProductDetails}
-        options={{ headerShown: false }}
-      // options={({ navigation, route }) => ({
-      //   headerTitle: 'Product Details',
-      //   headerTitleAlign: 'center',
-      //   headerTitleStyle: {
-      //     color: Color.black,
-      //     fontSize: 18,
-      //     fontFamily: Manrope.Bold,
-      //   },
-      //   headerStyle: { backgroundColor: Color.white },
-      //   headerLeft: () => (
-      //     <View style={{ marginHorizontal: 10 }}>
-      //       <Icon
-      //         name="arrow-back"
-      //         size={30}
-      //         color={Color.black}
-      //         onPress={() => navigation.goBack()}
-      //       />
-      //     </View>
-      //   ),
-      // })}
+        options={{headerShown: false}}
+        // options={({ navigation, route }) => ({
+        //   headerTitle: 'Product Details',
+        //   headerTitleAlign: 'center',
+        //   headerTitleStyle: {
+        //     color: Color.black,
+        //     fontSize: 18,
+        //     fontFamily: Manrope.Bold,
+        //   },
+        //   headerStyle: { backgroundColor: Color.white },
+        //   headerLeft: () => (
+        //     <View style={{ marginHorizontal: 10 }}>
+        //       <Icon
+        //         name="arrow-back"
+        //         size={30}
+        //         color={Color.black}
+        //         onPress={() => navigation.goBack()}
+        //       />
+        //     </View>
+        //   ),
+        // })}
       />
       <Stack.Screen
-          name="ProductListing"
-          component={ProductListing}
-          options={{ headerShown: false }}
-        />
-      <Stack.Screen
-          name="OrderSummary"
-          component={OrderSummary}
-          options={{ headerShown: false }}
-        />
+        name="ProductListing"
+        component={ProductListing}
+        options={{headerShown: false}}
+      />
+
       <Stack.Screen
         name="AboutUs"
         component={AboutUs}
-        options={({ navigation, route }) => ({
+        options={({navigation, route}) => ({
           headerTitle: 'About Us',
           headerTitleAlign: 'center',
           headerTitleStyle: {
@@ -81,9 +77,9 @@ export const HomeStack = () => {
             fontSize: 18,
             fontFamily: Manrope.Bold,
           },
-          headerStyle: { backgroundColor: Color.white },
+          headerStyle: {backgroundColor: Color.white},
           headerLeft: () => (
-            <View style={{ marginHorizontal: 10 }}>
+            <View style={{marginHorizontal: 10}}>
               <Icon
                 name="arrow-back"
                 size={30}
@@ -97,7 +93,7 @@ export const HomeStack = () => {
       <Stack.Screen
         name="ContactUs"
         component={ContactUs}
-        options={({ navigation, route }) => ({
+        options={({navigation, route}) => ({
           headerTitle: 'Contact Us',
           headerTitleAlign: 'center',
           headerTitleStyle: {
@@ -105,9 +101,9 @@ export const HomeStack = () => {
             fontSize: 18,
             fontFamily: Manrope.Bold,
           },
-          headerStyle: { backgroundColor: Color.white },
+          headerStyle: {backgroundColor: Color.white},
           headerLeft: () => (
-            <View style={{ marginHorizontal: 10 }}>
+            <View style={{marginHorizontal: 10}}>
               <Icon
                 name="arrow-back"
                 size={30}
@@ -122,7 +118,7 @@ export const HomeStack = () => {
       <Stack.Screen
         name="TermsandConditions"
         component={TermsandConditions}
-        options={({ navigation, route }) => ({
+        options={({navigation, route}) => ({
           headerTitle: 'Terms & Conditions',
           headerTitleAlign: 'center',
           headerTitleStyle: {
@@ -130,9 +126,9 @@ export const HomeStack = () => {
             fontSize: 18,
             fontFamily: Manrope.Bold,
           },
-          headerStyle: { backgroundColor: Color.white },
+          headerStyle: {backgroundColor: Color.white},
           headerLeft: () => (
-            <View style={{ marginHorizontal: 10 }}>
+            <View style={{marginHorizontal: 10}}>
               <Icon
                 name="arrow-back"
                 size={30}
@@ -146,7 +142,7 @@ export const HomeStack = () => {
       <Stack.Screen
         name="PrivacyPolicy"
         component={PrivacyPolicy}
-        options={({ navigation, route }) => ({
+        options={({navigation, route}) => ({
           headerTitle: 'Privacy Policy',
           headerTitleAlign: 'center',
           headerTitleStyle: {
@@ -154,9 +150,9 @@ export const HomeStack = () => {
             fontSize: 18,
             fontFamily: Manrope.Bold,
           },
-          headerStyle: { backgroundColor: Color.white },
+          headerStyle: {backgroundColor: Color.white},
           headerLeft: () => (
-            <View style={{ marginHorizontal: 10 }}>
+            <View style={{marginHorizontal: 10}}>
               <Icon
                 name="arrow-back"
                 size={30}
@@ -180,7 +176,7 @@ export const MyOrderStack = () => {
       <Stack.Screen
         name="MyOrder"
         component={MyOrders}
-        options={{ headerShown: false }}
+        options={{headerShown: false}}
         // options={({ navigation }) => ({
         //   headerTitle: 'My Orders',
         //   headerTitleAlign: 'center',
@@ -215,27 +211,27 @@ export const ProfileStack = () => {
       <Stack.Screen
         name="Profile"
         component={Profile}
-        options={{ headerShown: false }}
-      // options={({ navigation }) => ({
-      //   headerTitle: 'My Account',
-      //   headerTitleAlign: 'center',
-      //   headerTitleStyle: {
-      //     color: Color.black,
-      //     fontFamily: Manrope.Bold,
-      //     fontSize: 18,
-      //   },
-      //   headerStyle: { backgroundColor: Color.white },
-      //   headerLeft: () => (
-      //     <View style={{ marginHorizontal: 10 }}>
-      //       <Icon
-      //         name="arrow-back"
-      //         size={30}
-      //         color={Color.black}
-      //         onPress={() => navigation.goBack()}
-      //       />
-      //     </View>
-      //   ),
-      // })}
+        options={{headerShown: false}}
+        // options={({ navigation }) => ({
+        //   headerTitle: 'My Account',
+        //   headerTitleAlign: 'center',
+        //   headerTitleStyle: {
+        //     color: Color.black,
+        //     fontFamily: Manrope.Bold,
+        //     fontSize: 18,
+        //   },
+        //   headerStyle: { backgroundColor: Color.white },
+        //   headerLeft: () => (
+        //     <View style={{ marginHorizontal: 10 }}>
+        //       <Icon
+        //         name="arrow-back"
+        //         size={30}
+        //         color={Color.black}
+        //         onPress={() => navigation.goBack()}
+        //       />
+        //     </View>
+        //   ),
+        // })}
       />
     </Stack.Navigator>
   );
@@ -243,26 +239,26 @@ export const ProfileStack = () => {
 
 export const Auth = () => {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: true }}>
+    <Stack.Navigator screenOptions={{headerShown: true}}>
       <Stack.Screen
         name="Register"
         component={Register}
-        options={{ headerShown: false }}
+        options={{headerShown: false}}
       />
       <Stack.Screen
         name="StoreRegister"
         component={StoreRegister}
-        options={{ headerShown: false }}
+        options={{headerShown: false}}
       />
       <Stack.Screen
         name="Login"
         component={Login}
-        options={{ headerShown: false }}
+        options={{headerShown: false}}
       />
       <Stack.Screen
         name="OTPScreen"
         component={OTPScreen}
-        options={{ headerShown: false }}
+        options={{headerShown: false}}
       />
     </Stack.Navigator>
   );
@@ -279,20 +275,20 @@ const TabNavigator = () => {
   // useEffect(() => {
   //   userdetails()
   // }, [])
-  var { token } = userData;
+  var {token} = userData;
   // const dataCount = useSelector(state => state.UserReducer.count);
   // var { wishlist, cart } = dataCount;
 
   return (
     <Tab.Navigator
-      screenOptions={({ route }) => ({
-        tabBarStyle: { height: 55 },
-        tabBarIcon: ({ focused, color, size }) => {
+      screenOptions={({route}) => ({
+        tabBarStyle: {height: 55},
+        tabBarIcon: ({focused, color, size}) => {
           let iconName;
 
           if (route?.name === 'HomeTab') {
             return focused ? (
-              <View style={{ alignItems: 'center', justifyContent: 'flex-end' }}>
+              <View style={{alignItems: 'center', justifyContent: 'flex-end'}}>
                 <View
                   style={{
                     alignItems: 'center',
@@ -315,7 +311,7 @@ const TabNavigator = () => {
                 </Text>
               </View>
             ) : (
-              <View style={{ alignItems: 'center', justifyContent: 'flex-end' }}>
+              <View style={{alignItems: 'center', justifyContent: 'flex-end'}}>
                 <Iconviewcomponent
                   Icontag={'Ionicons'}
                   iconname={'home-outline'}
@@ -332,10 +328,9 @@ const TabNavigator = () => {
                 </Text>
               </View>
             );
-          }
-          else if (route?.name === 'MyOrderTab') {
+          } else if (route?.name === 'MyOrderTab') {
             return focused ? (
-              <View style={{ alignItems: 'center', justifyContent: 'flex-end' }}>
+              <View style={{alignItems: 'center', justifyContent: 'flex-end'}}>
                 <View
                   style={{
                     alignItems: 'center',
@@ -358,7 +353,7 @@ const TabNavigator = () => {
                 </Text>
               </View>
             ) : (
-              <View style={{ alignItems: 'center', justifyContent: 'flex-end' }}>
+              <View style={{alignItems: 'center', justifyContent: 'flex-end'}}>
                 <Iconviewcomponent
                   Icontag={'Ionicons'}
                   iconname={'bag-handle-outline'}
@@ -377,7 +372,7 @@ const TabNavigator = () => {
             );
           } else if (route?.name === 'ProfileTab') {
             return focused ? (
-              <View style={{ alignItems: 'center', justifyContent: 'flex-end' }}>
+              <View style={{alignItems: 'center', justifyContent: 'flex-end'}}>
                 <View
                   style={{
                     alignItems: 'center',
@@ -400,7 +395,7 @@ const TabNavigator = () => {
                 </Text>
               </View>
             ) : (
-              <View style={{ alignItems: 'center', justifyContent: 'flex-end' }}>
+              <View style={{alignItems: 'center', justifyContent: 'flex-end'}}>
                 <Iconviewcomponent
                   Icontag={'FontAwesome'}
                   iconname={'user-o'}
@@ -427,19 +422,19 @@ const TabNavigator = () => {
       <Tab.Screen
         name="HomeTab"
         component={HomeStack}
-        options={{ headerShown: false }}
+        options={{headerShown: false}}
       />
       <Tab.Screen
         name="MyOrderTab"
         component={MyOrderStack}
         options={{
-          headerShown: false
+          headerShown: false,
         }}
       />
       <Tab.Screen
         name="ProfileTab"
         component={ProfileStack}
-        options={{ headerShown: false }}
+        options={{headerShown: false}}
       />
     </Tab.Navigator>
   );

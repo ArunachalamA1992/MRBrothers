@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   StyleSheet,
   Text,
@@ -20,138 +20,218 @@ import {
   TextInput,
   ImageBackground,
   ToastAndroid,
+  BackHandler,
 } from 'react-native';
-import { Iconviewcomponent } from '../../Components/Icontag';
-import { Manrope } from '../../Global/FontFamily';
-import { Badge } from 'react-native-paper';
-import { useDispatch, useSelector } from 'react-redux';
+import {Iconviewcomponent} from '../../Components/Icontag';
+import {Manrope} from '../../Global/FontFamily';
+import {Badge} from 'react-native-paper';
+import {useDispatch, useSelector} from 'react-redux';
 import Color from '../../Global/Color';
 import fetchData from '../../Config/fetchData';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 import moment from 'moment';
-const OrderSummary = ({ route, navigation }) => {
+import {scr_height, scr_width} from '../../Utils/Dimensions';
+const OrderSummary = ({route, navigation}) => {
   const Route_Data = route?.params;
-  console.log(Route_Data?.OrderData?._id, 'Route_DataRoute_DataRoute_DataRoute_DataRoute_Data');
+  console.log(
+    Route_Data?.OrderData,
+    'Route_DataRoute_DataRoute_DataRoute_DataRoute_Data',
+  );
 
   const cart_count = useSelector(state => state.UserReducer.Cart_Count);
-  const { width, height } = Dimensions.get('window');
+  const {width, height} = Dimensions.get('window');
+  const [notificationcount, setNotificationcount] = useState(0);
   const [Orderdetails, setOrderdetails] = useState([]);
-  const [CategoryData, setCategoryData] = useState([
-    {
-      id: '0',
-      cat_image: require('../../assets/Images/ring.png'),
-      cat_name: 'Antique Ring',
-      cat_product: '20',
-      total: '70',
-      product_id: '0124',
-    },
-    {
-      id: '1',
-      cat_image: require('../../assets/Images/bangle.png'),
-      cat_name: 'Band Rings',
-      cat_product: '15',
-      total: '70',
-      product_id: '0124',
-    },
-    {
-      id: '2',
-      cat_image: require('../../assets/Images/chain.png'),
-      cat_name: 'Casual Rings',
-      cat_product: '5',
-      total: '70',
-      product_id: '0124',
-    },
-    {
-      id: '3',
-      cat_image: require('../../assets/Images/earing.png'),
-      cat_name: 'Diamond rings',
-      cat_product: '10',
-      total: '70',
-      product_id: '0124',
-    },
-    {
-      id: '4',
-      cat_image: require('../../assets/Images/ring.png'),
-      cat_name: 'Engagement rings',
-      cat_product: '55',
-      total: '70',
-      product_id: '0124',
-    },
-    {
-      id: '5',
-      cat_image: require('../../assets/Images/ring.png'),
-      cat_name: 'Platinum rings for men',
-      cat_product: '30',
-      total: '70',
-      product_id: '0124',
-    },
-    {
-      id: '6',
-      cat_image: require('../../assets/Images/ring.png'),
-      cat_name: 'Engagement rings',
-      cat_product: '55',
-      total: '70',
-      product_id: '0124',
-    },
-    {
-      id: '7',
-      cat_image: require('../../assets/Images/ring.png'),
-      cat_name: 'Platinum rings for men',
-      cat_product: '30',
-      total: '70',
-      product_id: '0124',
-    },
-    {
-      id: '8',
-      cat_image: require('../../assets/Images/ring.png'),
-      cat_name: 'Engagement rings',
-      cat_product: '55',
-      total: '70',
-      product_id: '0124',
-    },
-    {
-      id: '9',
-      cat_image: require('../../assets/Images/ring.png'),
-      cat_name: 'Platinum rings for men',
-      cat_product: '30',
-      total: '70',
-      product_id: '0124',
-    },
-  ]);
+  const [QRcode, setQRcode] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  // const [CategoryData, setCategoryData] = useState([
+  //   {
+  //     id: '0',
+  //     cat_image: require('../../assets/Images/ring.png'),
+  //     cat_name: 'Antique Ring',
+  //     cat_product: '20',
+  //     total: '70',
+  //     product_id: '0124',
+  //   },
+  //   {
+  //     id: '1',
+  //     cat_image: require('../../assets/Images/bangle.png'),
+  //     cat_name: 'Band Rings',
+  //     cat_product: '15',
+  //     total: '70',
+  //     product_id: '0124',
+  //   },
+  //   {
+  //     id: '2',
+  //     cat_image: require('../../assets/Images/chain.png'),
+  //     cat_name: 'Casual Rings',
+  //     cat_product: '5',
+  //     total: '70',
+  //     product_id: '0124',
+  //   },
+  //   {
+  //     id: '3',
+  //     cat_image: require('../../assets/Images/earing.png'),
+  //     cat_name: 'Diamond rings',
+  //     cat_product: '10',
+  //     total: '70',
+  //     product_id: '0124',
+  //   },
+  //   {
+  //     id: '4',
+  //     cat_image: require('../../assets/Images/ring.png'),
+  //     cat_name: 'Engagement rings',
+  //     cat_product: '55',
+  //     total: '70',
+  //     product_id: '0124',
+  //   },
+  //   {
+  //     id: '5',
+  //     cat_image: require('../../assets/Images/ring.png'),
+  //     cat_name: 'Platinum rings for men',
+  //     cat_product: '30',
+  //     total: '70',
+  //     product_id: '0124',
+  //   },
+  //   {
+  //     id: '6',
+  //     cat_image: require('../../assets/Images/ring.png'),
+  //     cat_name: 'Engagement rings',
+  //     cat_product: '55',
+  //     total: '70',
+  //     product_id: '0124',
+  //   },
+  //   {
+  //     id: '7',
+  //     cat_image: require('../../assets/Images/ring.png'),
+  //     cat_name: 'Platinum rings for men',
+  //     cat_product: '30',
+  //     total: '70',
+  //     product_id: '0124',
+  //   },
+  //   {
+  //     id: '8',
+  //     cat_image: require('../../assets/Images/ring.png'),
+  //     cat_name: 'Engagement rings',
+  //     cat_product: '55',
+  //     total: '70',
+  //     product_id: '0124',
+  //   },
+  //   {
+  //     id: '9',
+  //     cat_image: require('../../assets/Images/ring.png'),
+  //     cat_name: 'Platinum rings for men',
+  //     cat_product: '30',
+  //     total: '70',
+  //     product_id: '0124',
+  //   },
+  // ]);
   // GET ORDER DETAILS API FUNCTION :
-  const GetOrderDetails = async (item) => {
+  const GetOrderDetails = async item => {
     try {
       const getorderDetails = await fetchData?.Get_Order_Details(item);
       if (getorderDetails?.success == true) {
         setOrderdetails(getorderDetails?.data);
-        console.log(getorderDetails?.data, 'Suucess the get Api');
-        
+        console.log(
+          getorderDetails?.data,
+          'Suucess the get Apccccccccccccccccccccccccdi',
+        );
       } else {
         console.log('Failed To Get Order Details');
       }
-
     } catch (error) {
       console.log('catch in GetOrderDetails : ', error);
     }
-  }
+  };
+  // GET QR CODE API FUNCTION :
+  const GetQRCode = async () => {
+    try {
+      const getqrcode = await fetchData?.Get_QR_Code();
+      if (getqrcode?.success == true) {
+        setQRcode(getqrcode?.data);
+      } else {
+        setQRcode(null);
+      }
+    } catch (error) {
+      console.log('catch in GetQRCode : ', error);
+    }
+  };
+  useEffect(() => {
+    GetOrderDetails(Route_Data?.OrderData);
+    Notification();
+    GetQRCode();
+  }, []);
 
   useEffect(() => {
-    GetOrderDetails(Route_Data?.OrderData?._id);
+    const backAction = () => {
+      // navigation.push('MyOrderTab');
+      console.log('hnb jbvfkjbvfkjbvkjfbvjv');
+    };
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+    return () => backHandler.remove();
   }, []);
-  const GetTotalQuantity = async (items) => {
-    console.log(items,"RRRRRR");
-    return "hdjbjgbjk";
-    
-    // console.log(items?.weight_variant,'item?.weight_variantitem?.weight_variant');
-    
-    // let totalWeight = 0; // Use let to allow reassignment
-    // await Promise.all(items?.map(data => {
-    //   totalWeight += parseFloat(data?.weight_variant); // Convert to float and add
-    // }));
-    // console.log(totalWeight, 'Weight');
+
+  // GET NOTIFICATION COUNT API FUNCTION :
+  const Notification = async () => {
+    try {
+      const notification = await fetchData?.NotificationCount();
+      if (notification?.success == true) {
+        setNotificationcount(notification?.data?.count);
+      } else {
+        setNotificationcount(0);
+      }
+    } catch (error) {
+      console.log('catch in get_Notification : ', error);
+    }
   };
-  const renderItem = ({ item }) => {
+
+  const gettotalquantity = async item => {
+    const data = item;
+    let totalQuantity = 0;
+
+    await data?.map(datas => {
+      if (datas) {
+        totalQuantity += datas?.quantity;
+      }
+    });
+
+    if (totalQuantity === 0) {
+      return '0 Item';
+    } else if (totalQuantity === 1) {
+      return '1 Item';
+    } else {
+      return `${totalQuantity} Items`;
+    }
+  };
+  const gettotalWeight = async item => {
+    console.log('dd', item);
+    const data = item;
+    let totalweight = 0;
+
+    await data?.map(datas => {
+      if (datas) {
+        const weightVariant = parseInt(datas?.weight_variant, 10); // convert to integer
+        if (!isNaN(weightVariant)) {
+          // check if conversion was successful
+          totalweight += weightVariant;
+        }
+      }
+    });
+
+    if (totalweight === 0) {
+      return '0 g';
+    } else if (totalweight === 1) {
+      return '1 g';
+    } else {
+      return `${totalweight} g`;
+    }
+  };
+  const renderItem = ({item}) => {
     return (
-      <View style={{ paddingTop: 15, paddingBottom: 15 }}>
+      <View style={{paddingTop: 15, paddingBottom: 15}}>
         <View
           style={{
             flexDirection: 'row',
@@ -159,7 +239,7 @@ const OrderSummary = ({ route, navigation }) => {
             alignItems: 'center',
           }}>
           <Image
-            source={{ uri: item?.product_id?.images[0] }}
+            source={{uri: item?.product_id?.images[0]}}
             style={{
               width: 98,
               height: 76,
@@ -167,7 +247,7 @@ const OrderSummary = ({ route, navigation }) => {
               resizeMode: 'contain',
             }}
           />
-          <View style={{ width: width / 2 }}>
+          <View style={{width: width / 2}}>
             <Text
               style={{
                 fontSize: 16,
@@ -199,7 +279,7 @@ const OrderSummary = ({ route, navigation }) => {
                   fontFamily: Manrope.Medium,
                   color: Color.black,
                 }}>
-               {item?.weight_variant}g
+                {item?.weight_variant}g
               </Text>
             </Text>
           </View>
@@ -238,7 +318,7 @@ const OrderSummary = ({ route, navigation }) => {
           }}>
           <TouchableOpacity
             onPress={() => navigation.goBack()}
-            style={{ paddingHorizontal: 10 }}>
+            style={{paddingHorizontal: 10}}>
             <Iconviewcomponent
               Icontag={'AntDesign'}
               iconname={'arrowleft'}
@@ -263,21 +343,23 @@ const OrderSummary = ({ route, navigation }) => {
             alignItems: 'center',
           }}>
           <TouchableOpacity
-            style={{ paddingHorizontal: 20 }}
+            style={{paddingHorizontal: 20}}
             onPress={() => navigation.navigate('MyCart')}>
-            <Badge
-              style={{
-                position: 'absolute',
-                zIndex: 1,
-                top: -15,
-                right: 15,
-                backgroundColor: Color.red,
-                color: Color.white,
-                fontFamily: Manrope.Bold,
-                fontSize: 13,
-              }}>
-              {cart_count ? cart_count : 0}
-            </Badge>
+            {cart_count !== 0 ? (
+              <Badge
+                style={{
+                  position: 'absolute',
+                  zIndex: 1,
+                  top: -15,
+                  right: 15,
+                  backgroundColor: Color.red,
+                  color: Color.white,
+                  fontFamily: Manrope.Bold,
+                  fontSize: 13,
+                }}>
+                {cart_count ? cart_count : 0}
+              </Badge>
+            ) : null}
             <Iconviewcomponent
               Icontag={'Feather'}
               iconname={'shopping-cart'}
@@ -286,8 +368,23 @@ const OrderSummary = ({ route, navigation }) => {
             />
           </TouchableOpacity>
           <TouchableOpacity
-            style={{ paddingHorizontal: 10 }}
+            style={{paddingHorizontal: 10}}
             onPress={() => navigation.navigate('NotificationScreen')}>
+            {notificationcount == 0 ? null : (
+              <Badge
+                style={{
+                  position: 'absolute',
+                  zIndex: 1,
+                  top: -10,
+                  right: 5,
+                  backgroundColor: Color.red,
+                  color: Color.white,
+                  fontFamily: Manrope.Bold,
+                  fontSize: 13,
+                }}>
+                {notificationcount ? notificationcount : 0}
+              </Badge>
+            )}
             <Iconviewcomponent
               Icontag={'FontAwesome'}
               iconname={'bell-o'}
@@ -312,7 +409,7 @@ const OrderSummary = ({ route, navigation }) => {
           }}>
           Order Details
         </Text>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
           <Text
             style={{
               fontSize: 14,
@@ -330,7 +427,7 @@ const OrderSummary = ({ route, navigation }) => {
             {moment(Orderdetails?.createdAt).format('DD MMMM YYYY')}
           </Text>
         </View>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
           <Text
             style={{
               fontSize: 14,
@@ -366,7 +463,7 @@ const OrderSummary = ({ route, navigation }) => {
             Contact information
           </Text>
         </View>
-        <View style={{ gap: 5 }}>
+        <View style={{gap: 5}}>
           <Text
             style={{
               fontSize: 14,
@@ -433,7 +530,7 @@ const OrderSummary = ({ route, navigation }) => {
           }}>
           Total Order
         </Text>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
           <Text
             style={{
               fontSize: 14,
@@ -448,11 +545,12 @@ const OrderSummary = ({ route, navigation }) => {
               fontFamily: Manrope.Medium,
               color: '#111111',
             }}>
-            {/* {GetTotalQuantity()} */}
-            
+            {Orderdetails?.products
+              ? gettotalquantity(Orderdetails?.products)
+              : ' '}
           </Text>
         </View>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
           <Text
             style={{
               fontSize: 14,
@@ -467,7 +565,9 @@ const OrderSummary = ({ route, navigation }) => {
               fontFamily: Manrope.Medium,
               color: '#111111',
             }}>
-            750g
+            {Orderdetails?.products
+              ? gettotalWeight(Orderdetails?.products)
+              : ' '}
           </Text>
         </View>
       </View>
@@ -486,7 +586,9 @@ const OrderSummary = ({ route, navigation }) => {
               fontFamily: Manrope.SemiBold,
               color: Color.black,
             }}>
-            750 g{' '}
+            {Orderdetails?.products
+              ? gettotalWeight(Orderdetails?.products)
+              : ' '}
           </Text>
           <Text
             style={{
@@ -494,7 +596,9 @@ const OrderSummary = ({ route, navigation }) => {
               fontFamily: Manrope.Medium,
               color: '#666666',
             }}>
-            30 Items
+            {Orderdetails?.products
+              ? gettotalquantity(Orderdetails?.products)
+              : ' '}
           </Text>
         </View>
         <TouchableOpacity
@@ -505,6 +609,9 @@ const OrderSummary = ({ route, navigation }) => {
             justifyContent: 'center',
             alignItems: 'center',
             borderRadius: 5,
+          }}
+          onPress={() => {
+            setModalVisible(true);
           }}>
           <Text
             style={{
@@ -512,10 +619,86 @@ const OrderSummary = ({ route, navigation }) => {
               fontSize: 14,
               fontFamily: Manrope.SemiBold,
             }}>
-            Download invoice
+            {/* Download invoice */} Pay on QR CODE
           </Text>
         </TouchableOpacity>
       </View>
+      {/* QR CODE MODAL */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}>
+        <View style={{flex: 1, backgroundColor: Color?.white, padding: 10}}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              paddingLeft: 10,
+              paddingTop: 10,
+              gap: 5,
+            }}>
+            <AntDesign
+              name="left"
+              size={25}
+              color={Color?.black}
+              onPress={() => setModalVisible(!modalVisible)}
+            />
+            <Text
+              style={{
+                fontSize: 20,
+                color: Color?.black,
+                textTransform: 'uppercase',
+              }}>
+              QR CODE
+            </Text>
+          </View>
+          <View style={{flex: 1}}>
+            {QRcode == null ? null : (
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <Image
+                  source={{uri: QRcode[0]?.image}}
+                  style={{
+                    width: scr_width / 0.9,
+                    height: scr_height / 1.7,
+                    resizeMode: 'contain',
+                  }}
+                />
+              </View>
+            )}
+          </View>
+          <View>
+            <TouchableOpacity
+              style={{
+                backgroundColor: Color?.primary,
+                borderRadius: 10,
+                padding: 15,
+              }}
+              onPress={() => {
+                setModalVisible(!modalVisible);
+              }}>
+              <Text
+                style={{
+                  color: Color?.white,
+                  textAlign: 'center',
+                  fontSize: 14,
+                  textTransform: 'capitalize',
+                  fontWeight: '600',
+                  fontFamily: Manrope.SemiBold,
+                }}>
+                Close
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 };

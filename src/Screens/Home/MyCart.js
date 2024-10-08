@@ -27,13 +27,14 @@ import {LottieCheck} from '../../Components/Lottie';
 import {useNavigation} from '@react-navigation/native';
 import fetchData from '../../Config/fetchData';
 import {ToastAndroid} from 'react-native';
-import {setCartCount} from '../../Redux/user/UserAction';
+import {setcart, setCartCount} from '../../Redux/user/UserAction';
 import {useDispatch, useSelector} from 'react-redux';
 
 // create a component
 const MyCart = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
+  const cart_Data = useSelector(state => state.UserReducer.cart);
   const [Cartdata, setCartdata] = useState([]);
   const [height, setHeight] = useState(undefined);
   const [shopSection] = useState([
@@ -70,9 +71,11 @@ const MyCart = () => {
       if (Cartcount?.success == true) {
         console.log(Cartcount?.data?.length, '{{{{');
         dispatch(setCartCount(Cartcount?.data?.length));
+        dispatch(setcart(Cartcount));
       } else {
         if (Cartcount?.message == 'No Data found for this request') {
           dispatch(setCartCount(0));
+          dispatch(setcart(null));
         } else {
           console.log('Failed To Get Cart');
         }
@@ -170,19 +173,29 @@ const MyCart = () => {
   const OrderFunction = async item => {
     try {
       let orderitem = [];
+      console.log('ORDERaPI');
+
       await Cartdata?.map(data => {
         if (data) {
+          console.log(data, 'datadatadatadata');
+
           let obj = {
             product_id: data?.product_id?._id,
             quantity: data?.quantity,
+            size_variant: data?.size_variant,
+            weight_variant: data?.weight_variant,
+            purity_variant: data?.purity_variant,
           };
           orderitem.push(obj);
         }
       });
       const order = await fetchData?.Post_Order(orderitem);
       if (order?.success == true) {
-        setConfirmModal(true);
+        // setConfirmModal(true);
         Get_Cart();
+        navigation.navigate('OrderSuccess');
+      } else {
+        console.log('Failed To Add To Cart', order);
       }
     } catch (error) {
       console.log('Catch in OrderFunction : ', error);
@@ -192,7 +205,7 @@ const MyCart = () => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor={Color.primary} barStyle={'light-content'} />
-      <View style={{flex: 1, width: '100%', alignItems: 'center'}}>
+      <View style={{flex: 1, width: scr_width, alignItems: 'center'}}>
         <View style={{flex: 1, alignItems: 'center'}}>
           <Animated.SectionList
             sections={shopSection}
@@ -208,7 +221,7 @@ const MyCart = () => {
                   return (
                     <View
                       style={{
-                        width: '100%',
+                        width: scr_width - 5,
                         height: height,
                         alignItems: 'center',
                         marginBottom: 30,
@@ -234,23 +247,28 @@ const MyCart = () => {
                           data={Cartdata}
                           keyExtractor={(item, index) => item + index}
                           showsVerticalScrollIndicator={false}
-                          // ListEmptyComponent={() => {
-
-                          // }}
                           renderItem={({item, index}) => {
                             return (
-                              <View
+                              <TouchableOpacity
                                 style={{
-                                  width: scr_width,
+                                  width: scr_width - 15,
                                   margin: 5,
                                   elevation: 3,
                                   marginVertical: 10,
                                   paddingVertical: 10,
                                   backgroundColor: Color.white,
                                 }}
+                                onPress={() =>
+                                  navigation.navigate('ProductDetails', {
+                                    Productdata: item?.product_id?._id,
+                                  })
+                                }
                                 key={index}>
                                 <View
-                                  style={{width: '100%', flexDirection: 'row'}}>
+                                  style={{
+                                    width: scr_width,
+                                    flexDirection: 'row',
+                                  }}>
                                   <TouchableOpacity
                                     style={{
                                       flex: 1.5,
@@ -258,7 +276,12 @@ const MyCart = () => {
                                       alignItems: 'center',
                                       padding: 10,
                                       borderRadius: 5,
-                                    }}>
+                                    }}
+                                    onPress={() =>
+                                      navigation.navigate('ProductDetails', {
+                                        Productdata: item?.product_id?._id,
+                                      })
+                                    }>
                                     <Image
                                       source={{
                                         uri: item?.product_id?.images[0],
@@ -317,7 +340,8 @@ const MyCart = () => {
                                               color: Color.lightBlack,
                                               fontFamily: Manrope.SemiBold,
                                             }}>
-                                            {item?._id}
+                                            {' '}
+                                            #{item?.product_id?.product_code}
                                           </Text>
                                         </Text>
                                       </View>
@@ -344,12 +368,14 @@ const MyCart = () => {
                                       style={{
                                         width: '95%',
                                         flexDirection: 'row',
-                                        justifyContent: 'space-between',
+                                        justifyContent: 'space-evenly',
                                         alignItems: 'center',
+                                        // backgroundColor:'red'
+                                        overflow: 'hidden',
                                       }}>
                                       <View
                                         style={{
-                                          flex: 1,
+                                          // flex:0.7,
                                           flexDirection: 'row',
                                           justifyContent: 'flex-start',
                                           alignItems: 'center',
@@ -380,7 +406,7 @@ const MyCart = () => {
                                         }}></View>
                                       <View
                                         style={{
-                                          flex: 1,
+                                          // flex: 1,
                                           flexDirection: 'row',
                                           justifyContent: 'flex-end',
                                           alignItems: 'center',
@@ -399,7 +425,7 @@ const MyCart = () => {
                                             color: Color.lightBlack,
                                             fontFamily: Manrope.SemiBold,
                                           }}>
-                                          {item?.product_id?.net_weight} g
+                                          {item?.product_id?.net_weight}g
                                         </Text>
                                       </View>
                                     </View>
@@ -468,7 +494,7 @@ const MyCart = () => {
                                     </View>
                                   </View>
                                 </View>
-                              </View>
+                              </TouchableOpacity>
                             );
                           }}
                           style={{width: '100%'}}
@@ -481,25 +507,89 @@ const MyCart = () => {
           />
         </View>
         {Cartdata?.length == 0 ? null : (
-          <View style={{width: '100%', alignItems: 'center', bottom: 20}}>
-            <TouchableOpacity
-              // onPress={() => setConfirmModal(true)}
-              onPress={() => {
-                OrderFunction(Cartdata);
-              }}
+          // <View style={{width: '100%', alignItems: 'center', bottom: 20}}>
+          //   <TouchableOpacity
+          //     // onPress={() => setConfirmModal(true)}
+          //     onPress={() => {
+          //       OrderFunction(Cartdata);
+          //     }}
+          //     style={{
+          //       width: '95%',
+          //       height: 50,
+          //       justifyContent: 'center',
+          //       alignItems: 'center',
+          //       backgroundColor: Color.primary,
+          //       borderRadius: 5,
+          //     }}>
+          //     <Text style={{fontSize: 14, color: Color.white}}>Buy Now</Text>
+          //   </TouchableOpacity>
+          // </View>
+          <View>
+            <View style={{borderWidth: 1, borderColor: '#F5F5F5'}}></View>
+            <View
               style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
                 width: '95%',
-                height: 50,
-                justifyContent: 'center',
                 alignItems: 'center',
-                backgroundColor: Color.primary,
-                borderRadius: 5,
+                margin: 10,
               }}>
-              <Text style={{fontSize: 14, color: Color.white}}>Buy Now</Text>
-            </TouchableOpacity>
+              <View style={{width: scr_width / 2.5, alignItems: 'center'}}>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    color: Color.black,
+                    fontFamily: Manrope.SemiBold,
+                  }}>
+                  {cart_Data?.weight} g
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 12,
+                    color: '#666666',
+                    fontFamily: Manrope.SemiBold,
+                  }}>
+                  {cart_Data?.count == 1
+                    ? `${cart_Data?.count} Item`
+                    : `${cart_Data?.count} Items`}{' '}
+                </Text>
+              </View>
+              <TouchableOpacity
+                style={{
+                  flexDirection: 'row',
+                  width: scr_width / 2.34,
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  padding: 20,
+                  backgroundColor: Color.primary,
+                  borderRadius: 10,
+                  gap: 10,
+                }}
+                onPress={() => {
+                  OrderFunction(Cartdata);
+                }}>
+                <Iconviewcomponent
+                  Icontag={'Ionicons'}
+                  iconname={'bag-handle-outline'}
+                  icon_size={20}
+                  icon_color={Color.white}
+                />
+                <View>
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      color: Color.white,
+                      textAlign: 'center',
+                      textTransform: 'capitalize',
+                    }}>
+                    place Order
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </View>
           </View>
         )}
-        <Modal visible={confirmModal} transparent animationType="slide">
+        {/* <Modal visible={confirmModal} transparent animationType="slide">
           <View style={styles.modalBackground}>
             <Pressable
               onPress={() => setConfirmModal(false)}
@@ -587,7 +677,7 @@ const MyCart = () => {
               </View>
             </View>
           </View>
-        </Modal>
+        </Modal> */}
       </View>
     </SafeAreaView>
   );
@@ -637,5 +727,5 @@ const styles = StyleSheet.create({
   },
 });
 
-//make this component available to the app
+//make this component available to the appj
 export default MyCart;

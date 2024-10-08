@@ -1,5 +1,5 @@
 //import liraries
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   StyleSheet,
   Text,
@@ -20,23 +20,26 @@ import {
   NativeModules,
   TextInput,
   ImageBackground,
+  ActivityIndicator,
 } from 'react-native';
 import Color from '../../Global/Color';
-import { useNavigation } from '@react-navigation/native';
-import { scr_height, scr_width } from '../../Utils/Dimensions';
-import { Iconviewcomponent } from '../../Components/Icontag';
-import { Badge } from 'react-native-paper';
-import { Manrope } from '../../Global/FontFamily';
+import {useNavigation} from '@react-navigation/native';
+import {scr_height, scr_width} from '../../Utils/Dimensions';
+import {Iconviewcomponent} from '../../Components/Icontag';
+import {Badge} from 'react-native-paper';
+import {Manrope} from '../../Global/FontFamily';
 
-import { SwiperFlatList } from 'react-native-swiper-flatlist';
-import { Media } from '../../Global/Media';
+import {SwiperFlatList} from 'react-native-swiper-flatlist';
+import {Media} from '../../Global/Media';
 import fetchData from '../../Config/fetchData';
-import { useDispatch, useSelector } from 'react-redux';
-import { setCartCount } from '../../Redux/user/UserAction';
+import {useDispatch, useSelector} from 'react-redux';
+import {setcart, setCartCount} from '../../Redux/user/UserAction';
 import HomePage_Skeleton from '../../Components/skeleton/HomePage';
+import {useFocusEffect} from '@react-navigation/native';
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 
 LogBox.ignoreAllLogs();
-const { width } = Dimensions.get('window');
+const {width} = Dimensions.get('window');
 // create a component
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -44,72 +47,43 @@ const HomeScreen = () => {
   const [netInfo_State, setNetinfo] = useState(true);
   const [height, setHeight] = useState(undefined);
   const [Category_Data, setcategory_Data] = useState([]);
-  const [categoryData, setCategoryData] = useState([
-    {
-      id: '0',
-      cat_name: 'Rings',
-      cat_image: require('../../assets/Images/ring.png'),
-    },
-    {
-      id: '1',
-      cat_name: 'Necklaces',
-      cat_image: require('../../assets/Images/neck.png'),
-    },
-    {
-      id: '2',
-      cat_name: 'Bangles',
-      cat_image: require('../../assets/Images/bangle.png'),
-    },
-    {
-      id: '3',
-      cat_name: 'Bracelets',
-      cat_image: require('../../assets/Images/bracelet.png'),
-    },
-    {
-      id: '4',
-      cat_name: 'Earrings',
-      cat_image: require('../../assets/Images/earing.png'),
-    },
-    {
-      id: '5',
-      cat_name: 'Chains',
-      cat_image: require('../../assets/Images/chain.png'),
-    },
-    {
-      id: '6',
-      cat_name: 'Pendants',
-      cat_image: require('../../assets/Images/pen.png'),
-    },
-    // {
-    //     id: '7',
-    //     cat_name: 'Earrings',
-    //     cat_image: require('../../assets/Images/earing.png')
-    // },
-  ]);
+  const [notificationcount, setNotificationcount] = useState(0);
   const [shopSection] = useState([
-    { id: 1, title: 'banners', data: ['banners'] },
-    { id: 2, title: 'Category', data: ['Category'] },
-    { id: 3, title: 'hot deals', data: ['hot deals'] },
-    { id: 4, title: 'Trend Brands', data: ['Trend Brands'] },
-    { id: 5, title: 'Trend Product', data: ['Trend Product'] },
-    { id: 6, title: 'Offer Banner', data: ['Offer Banner'] },
-    { id: 7, title: 'Flash Selling', data: ['Flash Selling'] },
-    { id: 8, title: 'product', data: ['product'] },
-    { id: 9, title: 'Latest Product', data: ['Latest Product'] },
-    { id: 10, title: 'Featured Product', data: ['Featured Product'] },
+    {id: 1, title: 'banners', data: ['banners']},
+    {id: 2, title: 'Category', data: ['Category']},
+    {id: 3, title: 'hot deals', data: ['hot deals']},
+    {id: 4, title: 'Trend Brands', data: ['Trend Brands']},
+    {id: 5, title: 'Trend Product', data: ['Trend Product']},
+    {id: 6, title: 'Offer Banner', data: ['Offer Banner']},
+    {id: 7, title: 'Flash Selling', data: ['Flash Selling']},
+    {id: 8, title: 'product', data: ['product']},
+    {id: 9, title: 'Latest Product', data: ['Latest Product']},
+    {id: 10, title: 'Featured Product', data: ['Featured Product']},
   ]);
   const [bannerData, setBannerData] = useState({});
+  const [loader, setloader] = useState(true);
 
+  // useEffect(() => {
+  //   // setTimeout(() => {
+  //   //     setNetinfo(false);
+  //   // }, 3000);
+  //   Getbanner();
+  //   get_Category_List();
+  //   get_Cart_Count();
+  //   Notification();
+  // }, []);
 
-  useEffect(() => {
-    // setTimeout(() => {
-    //     setNetinfo(false);
-    // }, 3000);
-    Getbanner();
-    get_Category_List();
-    get_Cart_Count();
-  }, []);
-
+  // USE USEFOCUSEFFECT FUNCTION
+  useFocusEffect(
+    React.useCallback(() => {
+      Getbanner();
+      get_Category_List();
+      get_Cart_Count();
+      Notification();
+      setloader(false);
+      return () => {};
+    }, []),
+  );
 
   // GET CART COUNT :
   const get_Cart_Count = async () => {
@@ -118,15 +92,30 @@ const HomeScreen = () => {
       const Cartcount = await fetchData?.Cart_List();
       if (Cartcount?.success == true) {
         dispatch(setCartCount(Cartcount?.data?.length));
+        dispatch(setcart(Cartcount));
       } else {
         if (Cartcount?.message == 'No Data found for this request') {
           dispatch(setCartCount(0));
+          dispatch(setcart(null));
         } else {
           console.log('Failed To Get Cart');
         }
       }
     } catch (error) {
       console.log('catch in get_Cart_Count : ', error);
+    }
+  };
+  // GET NOTIFICATION :
+  const Notification = async () => {
+    try {
+      const notification = await fetchData?.NotificationCount();
+      if (notification?.success == true) {
+        setNotificationcount(notification?.data?.count);
+      } else {
+        setNotificationcount(0);
+      }
+    } catch (error) {
+      console.log('catch in get_Notification : ', error);
     }
   };
   // GET CATEGORY LIST :
@@ -143,8 +132,8 @@ const HomeScreen = () => {
   const Getbanner = async () => {
     try {
       const Get_Banner = await fetchData?.Get_Banner();
-      console.log("________________________ :", Get_Banner)
-      setBannerData(Get_Banner)
+      console.log('________________________ :', Get_Banner);
+      setBannerData(Get_Banner);
       // if (Get_Banner?.success == true) {
       //   console.log(Get_Banner, '{{{{{{{{{{');
 
@@ -152,10 +141,9 @@ const HomeScreen = () => {
       //   console.log(Get_Banner, '+');
       // }
     } catch (error) {
-      console.log("catch in get banner", error);
+      console.log('catch in get banner', error);
     }
-  }
-
+  };
 
   // USESELECTOR  FROM REDUX :
   const cart_count = useSelector(state => state.UserReducer.Cart_Count);
@@ -179,11 +167,11 @@ const HomeScreen = () => {
             padding: 10,
             marginTop: Platform.OS == 'ios' ? 80 : 0,
           }}>
-          <Text style={{ color: 'white' }}>No Internet Connection</Text>
+          <Text style={{color: 'white'}}>No Internet Connection</Text>
         </Animated.View>
       )}
-      <View style={{ flex: 1, alignItems: 'center' }}>
-        <View style={{ width: '100%', alignItems: 'center' }}>
+      <View style={{flex: 1, alignItems: 'center'}}>
+        <View style={{width: '100%', alignItems: 'center'}}>
           <View
             style={{
               width: '95%',
@@ -199,7 +187,7 @@ const HomeScreen = () => {
               }}>
               <Image
                 source={require('../../assets/Images/dash.png')}
-                style={{ width: 120, height: 100, resizeMode: 'contain' }}
+                style={{width: 120, height: 100, resizeMode: 'contain'}}
               />
             </View>
             <View
@@ -211,7 +199,7 @@ const HomeScreen = () => {
               }}>
               <TouchableOpacity
                 onPress={() => navigation.navigate('MyCart')}
-                style={{ paddingHorizontal: 10 }}>
+                style={{paddingHorizontal: 10}}>
                 {cart_count == 0 ? null : (
                   <Badge
                     style={{
@@ -236,8 +224,23 @@ const HomeScreen = () => {
                 />
               </TouchableOpacity>
               <TouchableOpacity
-                style={{ paddingHorizontal: 10 }}
+                style={{paddingHorizontal: 10}}
                 onPress={() => navigation.navigate('NotificationScreen')}>
+                {notificationcount == 0 ? null : (
+                  <Badge
+                    style={{
+                      position: 'absolute',
+                      zIndex: 1,
+                      top: -10,
+                      right: 5,
+                      backgroundColor: Color.red,
+                      color: Color.white,
+                      fontFamily: Manrope.Bold,
+                      fontSize: 13,
+                    }}>
+                    {notificationcount ? notificationcount : 0}
+                  </Badge>
+                )}
                 <Iconviewcomponent
                   Icontag={'FontAwesome'}
                   iconname={'bell-o'}
@@ -265,7 +268,8 @@ const HomeScreen = () => {
                 paddingHorizontal: 20,
                 borderColor: Color.cloudyGrey,
                 borderWidth: 0.5,
-              }}>
+              }}
+              onPress={() => navigation.navigate('SearchScreen')}>
               <Iconviewcomponent
                 Icontag={'Feather'}
                 iconname={'search'}
@@ -285,28 +289,33 @@ const HomeScreen = () => {
             </TouchableOpacity>
           </View>
         </View>
-
-        <Animated.SectionList
-          sections={shopSection}
-          scrollEnabled={true}
-          keyExtractor={(item, index) => item + index}
-          showsVerticalScrollIndicator={false}
-          scrollEventThrottle={1}
-          nestedScrollEnabled
-          initialNumToRender={5}
-          renderItem={({ item }) => {
-            switch (item) {
-              case 'banners':
-                return (
-                  <View
-                    style={{
-                      width: width,
-                      paddingVertical: 10,
-                      flexDirection: 'row',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                    }}>
-                    {/* <SwiperFlatList
+        {loader == true ? (
+          <View
+            style={{justifyContent: 'center', alignItems: 'center', flex: 1}}>
+            <ActivityIndicator size="large" color={Color.primary} />
+          </View>
+        ) : (
+          <Animated.SectionList
+            sections={shopSection}
+            scrollEnabled={true}
+            keyExtractor={(item, index) => item + index}
+            showsVerticalScrollIndicator={false}
+            scrollEventThrottle={1}
+            nestedScrollEnabled
+            initialNumToRender={5}
+            renderItem={({item}) => {
+              switch (item) {
+                case 'banners':
+                  return (
+                    <View
+                      style={{
+                        width: width,
+                        paddingVertical: 10,
+                        flexDirection: 'row',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                      }}>
+                      {/* <SwiperFlatList
                       autoplay
                       autoplayDelay={5}
                       autoplayLoop
@@ -339,157 +348,158 @@ const HomeScreen = () => {
                       }
                     /> */}
 
-
-                    <SwiperFlatList
-                      autoplay
-                      autoplayDelay={5}
-                      autoplayLoop
-                      index={0}
-                      showPagination
-                      paginationActiveColor={Color.primary}
-                      paginationDefaultColor="#ccc"
-                      data={bannerData.data} // Use the data array from the response
-                      renderItem={({ item }) => (
-                        <View style={styles.child}>
-                          <Image
-                            source={{ uri: item.image }} // Make sure to access the `image` field correctly
-                            style={styles.image}
-                          />
-                        </View>
-                      )}
-                    />
-                  </View>
-                );
-              case 'Category':
-                return (
-                  <View
-                    style={{
-                      flex: 1,
-                      height: height,
-                      marginVertical: 20, marginBottom: 50,
-                      alignItems: 'center',
-                    }}>
+                      <SwiperFlatList
+                        autoplay
+                        autoplayDelay={5}
+                        autoplayLoop
+                        index={0}
+                        showPagination={bannerData?.data?.length > 1}
+                        paginationActiveColor={Color?.primary}
+                        paginationDefaultColor="#ccc"
+                        data={bannerData?.data} // Use the data array from the response
+                        renderItem={({item}) => (
+                          <View style={styles?.child}>
+                            <Image
+                              source={{uri: item?.image}} // Make sure to access the `image` field correctly
+                              style={styles?.image}
+                            />
+                          </View>
+                        )}
+                      />
+                    </View>
+                  );
+                case 'Category':
+                  return (
                     <View
                       style={{
-                        width: '95%',
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
+                        flex: 1,
+                        height: height,
+                        marginVertical: 20,
+                        marginBottom: 50,
                         alignItems: 'center',
                       }}>
                       <View
                         style={{
-                          paddingHorizontal: 10,
-                          paddingVertical: 20,
+                          width: '95%',
                           flexDirection: 'row',
+                          justifyContent: 'space-between',
                           alignItems: 'center',
                         }}>
-                        <Text
+                        <View
                           style={{
-                            fontSize: 16,
-                            color: Color.black,
-                            fontFamily: Manrope.Medium,
-                            letterSpacing: 0.5,
+                            paddingHorizontal: 10,
+                            paddingVertical: 20,
+                            flexDirection: 'row',
+                            alignItems: 'center',
                           }}>
-                          Our Collections
-                        </Text>
-                        <Text
-                          style={{
-                            fontSize: 12,
-                            color: Color.white,
-                            backgroundColor: Color.primary,
-                            marginHorizontal: 10,
-                            fontFamily: Manrope.Medium,
-                            paddingHorizontal: 15,
-                            padding: 5,
-                            borderRadius: 30,
-                          }}>
-                          New
-                        </Text>
-                      </View>
-                      {/* <TouchableOpacity style={{ paddingHorizontal: 10 }}>
+                          <Text
+                            style={{
+                              fontSize: 16,
+                              color: Color.black,
+                              fontFamily: Manrope.Medium,
+                              letterSpacing: 0.5,
+                            }}>
+                            Our Collections
+                          </Text>
+                          <Text
+                            style={{
+                              fontSize: 12,
+                              color: Color.white,
+                              backgroundColor: Color.primary,
+                              marginHorizontal: 10,
+                              fontFamily: Manrope.Medium,
+                              paddingHorizontal: 15,
+                              padding: 5,
+                              borderRadius: 30,
+                            }}>
+                            New
+                          </Text>
+                        </View>
+                        {/* <TouchableOpacity style={{ paddingHorizontal: 10 }}>
                                                 <Text style={{ fontSize: 12, color: Color.lightBlack, textDecorationLine: 'underline' }}>See All</Text>
                                             </TouchableOpacity> */}
-                    </View>
-
-                    <View
-                      style={{
-                        width: scr_width,
-                        height: '100%',
-                        marginBottom: scr_height * 0.10,
-                      }}>
-                      <FlatList
-                        data={Category_Data}
-                        keyExtractor={(item, index) => item + index}
-                        numColumns={2}                       
-                        columnWrapperStyle={styles.row}
-                        renderItem={({ item, index }) => {
-                          return (
-                            <TouchableOpacity
-                              // onPress={() => navigation.navigate("ProductListing",{CategoryList:item})}
-                              onPress={() =>
-                                navigation.navigate('SelectCategory', {
-                                  CategoryList: item,
-                                })
-                              }
-                              style={{
-                                width: width / 2 - 20,
-                                height: 190,
-                                margin: 5,
-                                // backgroundColor:'red',
-                                justifyContent: 'center',
-                                alignItems: 'center'
-                              }}>
-                              <View style={{
-                                width: 170,
-                                height: 160,
-                                borderRadius: 10, backgroundColor: Color.softGrey,
-                              }}>
-                                <Image
-                                  source={{ uri: item?.image }}
-                                  style={{
-                                    width: '100%',
-                                    height: '100%',
-                                    resizeMode: 'cover',
-                                  }}
-                                />
-                              </View>
-                              <View
+                      </View>
+                      <View
+                        style={{
+                          width: scr_width,
+                          height: '100%',
+                          marginBottom: scr_height * 0.1,
+                        }}>
+                        <FlatList
+                          data={Category_Data}
+                          keyExtractor={(item, index) => item + index}
+                          numColumns={2}
+                          columnWrapperStyle={styles.row}
+                          renderItem={({item, index}) => {
+                            return (
+                              <TouchableOpacity
+                                // onPress={() => navigation.navigate("ProductListing",{CategoryList:item})}
+                                onPress={() =>
+                                  navigation.navigate('SelectCategory', {
+                                    CategoryList: item,
+                                  })
+                                }
                                 style={{
-                                  justifyContent: 'flex-start',
-                                  alignItems: 'flex-start',
+                                  width: width / 2 - 20,
+                                  height: 190,
+                                  margin: 5,
+                                  // backgroundColor:'red',
+                                  justifyContent: 'center',
+                                  alignItems: 'center',
                                 }}>
-                                <Text
+                                <View
                                   style={{
-                                    fontSize: 16,
-                                    color: Color.black,
-                                    font: Manrope.Bold,
-                                    marginVertical: 10,
+                                    width: 170,
+                                    height: 160,
+                                    borderRadius: 10,
+                                    backgroundColor: Color.softGrey,
                                   }}>
-                                  {item?.name}
-                                </Text>
-                              </View>
-                            </TouchableOpacity>
-                          );
-                        }}
-                        style={{ margin: 5 }}
-                      />
+                                  <Image
+                                    source={{uri: item?.image}}
+                                    style={{
+                                      width: '100%',
+                                      height: '100%',
+                                      resizeMode: 'cover',
+                                    }}
+                                  />
+                                </View>
+                                <View
+                                  style={{
+                                    justifyContent: 'flex-start',
+                                    alignItems: 'flex-start',
+                                  }}>
+                                  <Text
+                                    style={{
+                                      fontSize: 16,
+                                      color: Color.black,
+                                      font: Manrope.Bold,
+                                      marginVertical: 10,
+                                    }}>
+                                    {item?.name}
+                                  </Text>
+                                </View>
+                              </TouchableOpacity>
+                            );
+                          }}
+                          style={{margin: 5}}
+                        />
+                      </View>
                     </View>
-                  </View>
-                );
-              // case 'Trend Brands':
-              //     return (
-              //         <Text>Test</Text>
-              //     );
-              // case 'Trend Product':
-              //     return (
-              //         <Text>Test</Text>
-              //     );
-            }
-          }}
-        />
+                  );
+                // case 'Trend Brands':
+                //     return (
+                //         <Text>Test</Text>
+                //     );
+                // case 'Trend Product':
+                //     return (
+                //         <Text>Test</Text>
+                //     );
+              }
+            }}
+          />
+        )}
       </View>
     </SafeAreaView>
-    //    <HomePage_Skeleton/>
   );
 };
 
@@ -514,7 +524,6 @@ const styles = StyleSheet.create({
     height: 200, // Set image height
     borderRadius: 10, // Optional, to give rounded corners
     resizeMode: 'contain', // Resize the image to cover the entire space
-
   },
 });
 

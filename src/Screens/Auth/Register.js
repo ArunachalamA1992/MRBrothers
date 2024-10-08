@@ -10,6 +10,7 @@ import {
   Keyboard,
   SafeAreaView,
   ActivityIndicator,
+  BackHandler,
 } from 'react-native';
 import Color from '../../Global/Color';
 import {Manrope} from '../../Global/FontFamily';
@@ -27,6 +28,7 @@ const Register = () => {
   const [number, setNumber] = useState('');
   const [name, setName] = useState('');
   const [error, setError] = useState(false);
+  const [nameError, setNameError] = useState(null);
 
   const [email, setEmail] = useState('');
   const [emailValidError, setEmailValidError] = useState('');
@@ -45,6 +47,16 @@ const Register = () => {
     } else if (reg.test(val) === true) {
       setEmailValidError('');
     }
+  };
+  useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', handleBackPress);
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', handleBackPress);
+    };
+  }, []);
+  const handleBackPress = () => {
+    console.log('Back button pressed');
+    return true;
   };
 
   const chkNumber = number => {
@@ -66,46 +78,98 @@ const Register = () => {
     }
   };
 
+  const validateEmail = email => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  };
+  // const registerClick = async () => {
+  //   try {
+  //     setLoading(true);
+  //     const numberIsMobile = isMobile(number);
+  //     if (name != '' && email != '' && number != '') {
+  //       if (validateEmail(email)) {
+  //         var data = {
+  //           mobile: number,
+  //         };
+  //         const New_Mobile_Number = await fetchData?.new_mobilenumber(data, null);
+  //         if (New_Mobile_Number?.success == true) {
+  //           ToastAndroid.show('OTP has been sent', ToastAndroid.SHORT);
+  //           setLoading(false);
+  //           await AsyncStorage.setItem('ACCESS_TOKEN', New_Mobile_Number?.token);
+  //           navigation.navigate('OTPScreen', {
+  //             IS_Mobile_number: false,
+  //             Mobile_Number: number,
+  //             userdata: {name: name, email: email, mobilenumber: number},
+  //             token: New_Mobile_Number?.token,
+  //           });
+  //         } else {
+  //           ToastAndroid.show(New_Mobile_Number?.message, ToastAndroid.SHORT);
+  //           setLoading(false);
+  //         }
+  //         setLoading(false);
+  //       }
+  //       } else {
+  //         // Show error for invalid email
+  //         console.log("Invalid email format!");
+  //       }
+  //     }
+  //       else {
+  //       ToastAndroid.show(
+  //         'Please select all the mandatory fields',
+  //         ToastAndroid.SHORT,
+  //       );
+  //       setLoading(false);
+  //     }
+  //   } catch (error) {
+  //     console.log('catch in login_Verify :', error);
+  //     ToastAndroid.show('Something went wrong', ToastAndroid.SHORT);
+  //     setLoading(false);
+  //   }
+  // };
   const registerClick = async () => {
     try {
       setLoading(true);
-      const numberIsMobile = isMobile(number);
-      if (name != '' && email != '' && number != '') {
-        var data = {
-          mobile: number,
-        };
-        const New_Mobile_Number = await fetchData?.new_mobilenumber(data, null);
-        if (New_Mobile_Number?.success == true) {
-          ToastAndroid.show('OTP has been sent', ToastAndroid.SHORT);
-          setLoading(false);
-          await AsyncStorage.setItem('ACCESS_TOKEN', New_Mobile_Number?.token);
-          navigation.navigate('OTPScreen', {
-            IS_Mobile_number: false,
-            Mobile_Number: number,
-            userdata: {name: name, email: email , mobilenumber: number},
-            token: New_Mobile_Number?.token,
-          });
+      if (name !== '' && email !== '' && number !== '') {
+        if (validateEmail(email)) {
+          const numberIsMobile = isMobile(number);
+          var data = {
+            mobile: number,
+          };
+          const New_Mobile_Number = await fetchData?.new_mobilenumber(
+            data,
+            null,
+          );
+          if (New_Mobile_Number?.success === true) {
+            ToastAndroid.show('OTP has been sent', ToastAndroid.SHORT);
+            await AsyncStorage.setItem(
+              'ACCESS_TOKEN',
+              New_Mobile_Number?.token,
+            );
+            navigation.navigate('OTPScreen', {
+              IS_Mobile_number: false,
+              Mobile_Number: number,
+              userdata: {name: name, email: email, mobilenumber: number},
+              token: New_Mobile_Number?.token,
+            });
+          } else {
+            ToastAndroid.show(New_Mobile_Number?.message, ToastAndroid.SHORT);
+          }
         } else {
-          ToastAndroid.show(New_Mobile_Number?.message, ToastAndroid.SHORT);
-          setLoading(false);
+          ToastAndroid.show('Invalid email format!', ToastAndroid.SHORT);
         }
-        setLoading(false);
       } else {
         ToastAndroid.show(
-          'Please select all the mandatory fields',
+          'Please fill in all the mandatory fields',
           ToastAndroid.SHORT,
         );
-        setLoading(false);
       }
     } catch (error) {
-      console.log('catch in login_Verify :', error);
+      console.log('catch in login_Verify:', error);
       ToastAndroid.show('Something went wrong', ToastAndroid.SHORT);
+    } finally {
       setLoading(false);
     }
   };
-
-
-
 
   return (
     <SafeAreaView style={styles.container}>
@@ -171,16 +235,29 @@ const Register = () => {
                 placeholder={'Enter your Name'}
                 placeholderTextColor={Color.cloudyGrey}
                 value={name}
-                maxLength={10}
+                // maxLength={10}
                 autoFocus={false}
                 keyboardType="name-phone-pad"
                 onChangeText={input => {
-                  setName(input);
+                  const nameRegex = /^[A-Za-z\s]*$/;
+                  if (input.length === 0) {
+                    setName(input);
+                    setNameError('Please enter your valid name');
+                  } else if (!nameRegex.test(input)) {
+                    setNameError(
+                      'Name cannot contain numbers or special characters',
+                    );
+                  } else {
+                    setName(input);
+                    setNameError(null);
+                  }
                 }}
                 style={styles.numberTextBox}
               />
             </View>
-            {error && <Text style={styles.invalidLogin}>{error}</Text>}
+            {nameError == null ? null : (
+              <Text style={styles.invalidLogin}>{nameError}</Text>
+            )}
           </View>
           <Text
             style={{
@@ -213,17 +290,7 @@ const Register = () => {
               />
             </View>
             {emailValidError ? (
-              <Text
-                style={{
-                  textAlign: 'left',
-                  fontFamily: Manrope.Regular,
-                  paddingVertical: 10,
-                  paddingHorizontal: 10,
-                  fontSize: 14,
-                  color: 'red',
-                }}>
-                {emailValidError}
-              </Text>
+              <Text style={styles.invalidLogin}>{emailValidError}</Text>
             ) : null}
           </View>
           <Text

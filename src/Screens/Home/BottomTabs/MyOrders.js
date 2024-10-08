@@ -1,5 +1,5 @@
 //import liraries
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   StyleSheet,
   Text,
@@ -23,29 +23,31 @@ import {
 } from 'react-native';
 
 import Color from '../../../Global/Color';
-import { Iconviewcomponent } from '../../../Components/Icontag';
-import { Manrope } from '../../../Global/FontFamily';
-import { scr_height, scr_width } from '../../../Utils/Dimensions';
+import {Iconviewcomponent} from '../../../Components/Icontag';
+import {Manrope} from '../../../Global/FontFamily';
+import {scr_height, scr_width} from '../../../Utils/Dimensions';
 import SwiperFlatList from 'react-native-swiper-flatlist';
-import { Badge } from 'react-native-paper';
+import {Badge} from 'react-native-paper';
 import fetchData from '../../../Config/fetchData';
-import { useDispatch, useSelector } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
+import moment from 'moment';
+import {useFocusEffect} from '@react-navigation/native';
 
 // create a component
-const MyOrders = ({ navigation }) => {
+const MyOrders = ({navigation}) => {
   const cart_count = useSelector(state => state.UserReducer.Cart_Count);
 
   const [height, setHeight] = useState(undefined);
   const [Myorder, setmyorder] = useState([]);
   const [shopSection] = useState([
-    { id: 1, title: 'banners', data: ['banners'] },
-    { id: 2, title: 'Category', data: ['Category'] },
+    {id: 1, title: 'banners', data: ['banners']},
+    {id: 2, title: 'Category', data: ['Category']},
   ]);
 
   const [filterData, setFilterData] = useState([
     {
       id: '0',
-      filter_name: 'Placed',
+      filter_name: 'placed',
     },
     {
       id: '1',
@@ -53,69 +55,40 @@ const MyOrders = ({ navigation }) => {
     },
     {
       id: '2',
-      filter_name: 'Delivered',
+      filter_name: 'rejected',
     },
     {
       id: '3',
       filter_name: 'Cancelled',
     },
   ]);
-
-  const [orderData, setOrderData] = useState([
-    {
-      id: '0',
-      order_name: 'Royal Gold Ring',
-      order_product_Id: '#2222',
-      order_status: 'In-Progressing',
-      order_Id: '#0124',
-      order_quantity: '25',
-      order_image: require('../../../assets/Images/earing.png'),
-    },
-    {
-      id: '1',
-      order_name: 'Royal Gold Ring',
-      order_product_Id: '#0124',
-      order_status: 'Order Placed',
-      order_Id: '#0124',
-      order_quantity: '5',
-      order_image: require('../../../assets/Images/bangle.png'),
-    },
-    {
-      id: '2',
-      order_name: 'Royal Gold Ring',
-      order_product_Id: '#3456',
-      order_status: 'Delivered',
-      order_Id: '#0124',
-      order_quantity: '15',
-      order_image: require('../../../assets/Images/bracelet.png'),
-    },
-    {
-      id: '3',
-      order_name: 'Royal Gold Ring',
-      order_product_Id: '#007',
-      order_status: 'Order Placed',
-      order_Id: '#007',
-      order_quantity: '10',
-      order_image: require('../../../assets/Images/pen.png'),
-    },
-  ]);
+  const [notificationcount, setNotificationcount] = useState(0);
   const [selectItem, setSelectItem] = useState('0');
 
   const selectedItem = item => {
     try {
       setSelectItem(item.id);
+      GetMyOrders(item?.id);
     } catch (error) {
       console.log('catch in selected_Item : ', error);
     }
   };
   // GET MY ORDERS API FUNCTION :
-  const GetMyOrders = async () => {
+  const GetMyOrders = async order => {
     try {
-      const MyOrders = await fetchData?.MyOrders();
+      let value = 'placed';
+      if (order == 1) {
+        value = 'processed';
+      } else if (order == 2) {
+        value = 'rejected';
+      } else if (order == 3) {
+        value = 'cancelled';
+      } else {
+        value = 'placed';
+      }
+      const MyOrders = await fetchData?.MyOrders(value);
       if (MyOrders?.success == true) {
         setmyorder(MyOrders?.data);
-        console.log('Suucess the get Api');
-        console.log(MyOrders?.data);
       } else {
         console.log('Failed To Get My Orders');
       }
@@ -123,11 +96,92 @@ const MyOrders = ({ navigation }) => {
       console.log('catch in GetMyOrders : ', error);
     }
   };
+  // GET NOTIFICATION :
+  const Notification = async () => {
+    try {
+      const notification = await fetchData?.NotificationCount();
+      if (notification?.success == true) {
+        setNotificationcount(notification?.data?.count);
+      } else {
+        setNotificationcount(0);
+      }
+    } catch (error) {
+      console.log('catch in get_Notification : ', error);
+    }
+  };
 
   useEffect(() => {
-    GetMyOrders();
+    GetMyOrders(filterData?.id);
+    Notification();
   }, []);
 
+  // USE USEFOCUSEFFECT FUNCTION
+  useFocusEffect(
+    React.useCallback(() => {
+      GetMyOrders(filterData?.id);
+      Notification();
+      setSelectItem('0');
+      return () => {};
+    }, []),
+  );
+  // calculate total quantity :
+  // const gettotalquantity = async item => {
+  //   if (!item) return '0 g';
+  //   console.log('dd', item);
+  //   const data = item;
+  //   let totalQuantity = 0;
+
+  //   await data?.map(datas => {
+  //     if (datas) {
+  //       totalQuantity += datas?.quantity;
+  //     }
+  //   });
+
+  //   if (totalQuantity === 0) {
+  //     console.log('wwwww');
+
+  //     return '0 Item';
+  //   } else if (totalQuantity === 1) {
+  //     console.log('gggg');
+  //     console.log(totalQuantity, 'gggg');
+  //     return '1 Item';
+  //   } else {
+  //     console.log('llll');
+  //     console.log(totalQuantity, 'kkkkk');
+  //     return `${totalQuantity} Items`;
+  //   }
+  // };
+  // const gettotalWeight = async item => {
+  //   if (!item) return '0 g';
+  //   console.log('dd', item);
+  //   const data = item;
+  //   let totalweight = 0;
+
+  //   await data?.map(datas => {
+  //     if (datas) {
+  //       const weightVariant = parseInt(datas?.weight_variant, 10); // convert to integer
+  //       if (!isNaN(weightVariant)) {
+  //         // check if conversion was successful
+  //         console.log('weightVariant', weightVariant);
+
+  //         totalweight += weightVariant;
+  //       }
+  //     }
+  //   });
+
+  //   if (totalweight === 0) {
+  //     console.log('wwwww');
+  //     return '0 g';
+  //   } else if (totalweight === 1) {
+  //     console.log('gggg');
+  //     console.log(totalweight, 'gggg');
+  //     return '1 g';
+  //   } else {
+  //     console.log('llll');
+  //     console.log(totalweight, 'lll');
+  //     return `${totalweight} g`;
+  //   }
+  // };
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar
@@ -137,7 +191,7 @@ const MyOrders = ({ navigation }) => {
         barStyle="light-content"
         networkActivityIndicatorVisible={true}
       />
-      <View style={{ flex: 1, width: '100%', alignItems: 'center' }}>
+      <View style={{flex: 1, width: '100%', alignItems: 'center'}}>
         <View
           style={{
             width: '100%',
@@ -157,7 +211,7 @@ const MyOrders = ({ navigation }) => {
             }}>
             <TouchableOpacity
               onPress={() => navigation.goBack()}
-              style={{ paddingHorizontal: 10 }}>
+              style={{paddingHorizontal: 10}}>
               <Iconviewcomponent
                 Icontag={'AntDesign'}
                 iconname={'arrowleft'}
@@ -171,7 +225,7 @@ const MyOrders = ({ navigation }) => {
                 color: Color.black,
                 fontFamily: Manrope.SemiBold,
               }}>
-              MyOrders
+              My Orders
             </Text>
           </View>
           <View
@@ -182,7 +236,7 @@ const MyOrders = ({ navigation }) => {
               alignItems: 'center',
             }}>
             <TouchableOpacity
-              style={{ paddingHorizontal: 20 }}
+              style={{paddingHorizontal: 20}}
               onPress={() => navigation.navigate('MyCart')}>
               {cart_count == 0 ? null : (
                 <Badge
@@ -208,8 +262,23 @@ const MyOrders = ({ navigation }) => {
               />
             </TouchableOpacity>
             <TouchableOpacity
-              style={{ paddingHorizontal: 10 }}
+              style={{paddingHorizontal: 10}}
               onPress={() => navigation.navigate('NotificationScreen')}>
+              {notificationcount == 0 ? null : (
+                <Badge
+                  style={{
+                    position: 'absolute',
+                    zIndex: 1,
+                    top: -10,
+                    right: 5,
+                    backgroundColor: Color.red,
+                    color: Color.white,
+                    fontFamily: Manrope.Bold,
+                    fontSize: 13,
+                  }}>
+                  {notificationcount ? notificationcount : 0}
+                </Badge>
+              )}
               <Iconviewcomponent
                 Icontag={'FontAwesome'}
                 iconname={'bell-o'}
@@ -255,13 +324,13 @@ const MyOrders = ({ navigation }) => {
             </Text>
           </TouchableOpacity>
         </View> */}
-        <View style={{ width: scr_width, paddingVertical: 10 }}>
+        <View style={{width: scr_width, paddingVertical: 10}}>
           <FlatList
             data={filterData}
             keyExtractor={(item, index) => item + index}
             horizontal
             showsHorizontalScrollIndicator={false}
-            renderItem={({ item, index }) => {
+            renderItem={({item, index}) => {
               var selectItemBg =
                 selectItem === item.id ? Color.primary : Color.white;
               return (
@@ -286,17 +355,18 @@ const MyOrders = ({ navigation }) => {
                       color: selectItem === item.id ? Color.white : Color.black,
                       font: Manrope.Bold,
                       paddingVertical: 5,
+                      textTransform: 'capitalize',
                     }}>
                     {item?.filter_name}
                   </Text>
                 </TouchableOpacity>
               );
             }}
-            style={{ margin: 5 }}
+            style={{margin: 5}}
           />
         </View>
 
-        <View style={{ flex: 1, alignItems: 'center' }}>
+        <View style={{flex: 1, alignItems: 'center'}}>
           <Animated.SectionList
             sections={shopSection}
             scrollEnabled={true}
@@ -305,7 +375,7 @@ const MyOrders = ({ navigation }) => {
             scrollEventThrottle={1}
             nestedScrollEnabled
             initialNumToRender={5}
-            renderItem={({ item }) => {
+            renderItem={({item}) => {
               switch (item) {
                 case 'banners':
                   return (
@@ -319,7 +389,9 @@ const MyOrders = ({ navigation }) => {
                         data={Myorder}
                         keyExtractor={(item, index) => item + index}
                         showsVerticalScrollIndicator={false}
-                        renderItem={({ item, index }) => {
+                        renderItem={({item, index}) => {
+                          // console.log('ddddddddddddddd', item);
+
                           return (
                             // <View
                             //   style={{
@@ -493,11 +565,19 @@ const MyOrders = ({ navigation }) => {
                               }}
                               onPress={() =>
                                 navigation.navigate('OrderSummary', {
-                                  OrderData: item,
+                                  OrderData: item?._id,
                                 })
                               }>
-                              <View style={{ width: '100%', flexDirection: 'row' }}>
-                                <View style={{ flex: 1.5, width: 180, height: 120, justifyContent: 'center', alignItems: 'center' }}>
+                              <View
+                                style={{width: '100%', flexDirection: 'row'}}>
+                                <View
+                                  style={{
+                                    flex: 1.5,
+                                    width: 180,
+                                    height: 120,
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                  }}>
                                   <Image
                                     source={{
                                       uri: item?.products[0]?.product_id
@@ -511,28 +591,34 @@ const MyOrders = ({ navigation }) => {
                                     }}
                                   />
                                 </View>
-                                <View style={{ flex: 3, justifyContent: 'flex-start', alignItems: 'flex-start' }}>
-                                  <View style={{ padding: 10 }}>
+                                <View
+                                  style={{
+                                    flex: 3,
+                                    justifyContent: 'flex-start',
+                                    alignItems: 'flex-start',
+                                  }}>
+                                  <View style={{padding: 10}}>
                                     <Text
                                       style={{
                                         fontSize: 16,
                                         color: Color.black,
                                         font: Manrope.Bold,
                                         textTransform: 'capitalize',
-                                        width: scr_width / 1.8, paddingVertical: 3
+                                        width: scr_width / 1.8,
+                                        paddingVertical: 3,
                                       }}
                                       numberOfLines={2}>
                                       {item?.products[0]?.product_id?.name}
                                     </Text>
                                     <View
-                                      style={{ flexDirection: 'row', gap: 5 }}>
+                                      style={{flexDirection: 'row', gap: 5}}>
                                       <Text
                                         style={{
                                           fontSize: 14,
                                           color: Color.cloudyGrey,
                                           fontFamily: Manrope.Regular,
                                         }}>
-                                        Product ID -
+                                        Date -
                                       </Text>
                                       <Text
                                         style={{
@@ -542,11 +628,15 @@ const MyOrders = ({ navigation }) => {
                                           width: scr_width / 2.5,
                                         }}
                                         numberOfLines={1}>
-                                        #0124
+                                        {/* #{item?.products[0]?.product_id?.product_code ? item?.products[0]?.product_id?.product_code : 'Null'} */}
+                                        {/* {item?.createdAt} */}
+                                        {moment(item?.createdAt).format(
+                                          'DD.MM.YYYY',
+                                        )}
                                       </Text>
                                     </View>
                                     <View
-                                      style={{ flexDirection: 'row', gap: 5 }}>
+                                      style={{flexDirection: 'row', gap: 5}}>
                                       <Text
                                         style={{
                                           fontSize: 14,
@@ -563,11 +653,16 @@ const MyOrders = ({ navigation }) => {
                                           width: scr_width / 2.5,
                                         }}
                                         numberOfLines={1}>
-                                        25 items
+                                        {`${
+                                          item?.products?.reduce(
+                                            (a, b) => a + b.quantity,
+                                            0,
+                                          ) ?? 0
+                                        } Items`}
                                       </Text>
                                     </View>
                                     <View
-                                      style={{ flexDirection: 'row', gap: 5 }}>
+                                      style={{flexDirection: 'row', gap: 5}}>
                                       <Text
                                         style={{
                                           fontSize: 14,
@@ -584,7 +679,20 @@ const MyOrders = ({ navigation }) => {
                                           width: scr_width / 2.5,
                                         }}
                                         numberOfLines={1}>
-                                        250g
+                                        {`${
+                                          item?.products.every(
+                                            a =>
+                                              a.weight_variant !== null &&
+                                              !isNaN(a.weight_variant),
+                                          )
+                                            ? item?.products?.reduce(
+                                                (a, b) =>
+                                                  a +
+                                                  parseFloat(b.weight_variant),
+                                                0,
+                                              ) ?? 0
+                                            : 0
+                                        } g`}{' '}
                                       </Text>
                                     </View>
                                   </View>
@@ -613,13 +721,13 @@ const MyOrders = ({ navigation }) => {
                                     // backgroundColor:'red'
                                   }}
                                   numberOfLines={1}>
-                                  #PX2356498764AJLQW
+                                  {item?.order_id}
                                 </Text>
                               </View>
                             </TouchableOpacity>
                           );
                         }}
-                        style={{ width: '100%' }}
+                        style={{width: '100%'}}
                       />
                     </View>
                   );

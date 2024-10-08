@@ -71,6 +71,26 @@ export const api = {
       })
       .catch((err) => Promise.reject(err));
   },
+  // PUT Method in NOTIFICATION
+  putMethodNotification: (url, accessToken) => {
+    const headers = {
+      ...api.header(),
+    };
+    if (accessToken) {      
+      headers.Authorization = `Bearer ${accessToken}`;
+    }
+    return fetch(baseUrl + url, {
+      method: 'PUT',
+      headers: headers
+        })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data) {
+          return data;
+        }
+      })
+      .catch((err) => Promise.reject(err));
+  },
 
   // DELETE Method
   deleteMethod: (url, accessToken) => {
@@ -87,7 +107,7 @@ export const api = {
       .then((res) => res.json())
       .then((data) => {
         if (data) {
-          return data;
+          return data;  
         }
       })
       .catch((err) => Promise.reject(err));

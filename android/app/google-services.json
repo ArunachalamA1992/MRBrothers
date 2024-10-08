@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "222909341579",
+    "project_id": "mr-bro-fcc35",
+    "storage_bucket": "mr-bro-fcc35.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:222909341579:android:e8bc978cde05ed7955d98e",
+        "android_client_info": {
+          "package_name": "com.mrbrothers"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCkw2Ve094BXGm7GkJfPvPI4cgt__izQSE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

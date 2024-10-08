@@ -37,8 +37,8 @@ const StoreRegister = ({route}) => {
   const [number, setNumber] = useState('');
   const [state, setState] = useState([]);
   const [city, setCity] = useState([]);
-  const [selectedState, setSelectedState] = useState("");
-  const [selectedcity, setSelectedcity] = useState("");
+  const [selectedState, setSelectedState] = useState('');
+  const [selectedcity, setSelectedcity] = useState('');
   const [pincode, setPincode] = useState('');
   // const [error, setError] = useState({
   //     name: null,
@@ -50,28 +50,24 @@ const StoreRegister = ({route}) => {
   //     city: null,
   //     pincode: null,
   // });
-//   const [error, setError] = useState('');
-const fetchState = async () => {
-  const City = await fetchData?.City_List(null, null);
-  const State = await fetchData?.State_List(null, null);
-  if (City?.success == true)
-  {
-    setCity(City?.data);
-  }else{
-    console.log('Failed To Get City');   
-  } 
-  if(State?.success == true)
-  {
-    setState(State?.data);
-  }
-  else{
-    console.log("Failed To Get State");
-    
-  }
-};
-useEffect(() => {
-  fetchState();
-}, []);
+  //   const [error, setError] = useState('');
+  const fetchState = async () => {
+    const City = await fetchData?.City_List(null, null);
+    const State = await fetchData?.State_List(null, null);
+    if (City?.success == true) {
+      setCity(City?.data);
+    } else {
+      console.log('Failed To Get City');
+    }
+    if (State?.success == true) {
+      setState(State?.data);
+    } else {
+      console.log('Failed To Get State');
+    }
+  };
+  useEffect(() => {
+    fetchState();
+  }, []);
   const validation = async () => {
     if (
       name == '' ||
@@ -110,8 +106,8 @@ useEffect(() => {
           mobile: Route_Data?.userdata?.mobilenumber,
           gst: gst,
           shop_name: name,
-          building_name: buildingName,
-          street: street,
+          building_address: buildingName,
+          address_line: street,
           //   address_line: ,
           city: selectedcity,
           state: selectedState,
@@ -119,20 +115,20 @@ useEffect(() => {
           // state: 'Delhi',
           pincode: pincode,
         };
+        console.log('DataDataData', Data);
         const Register = await fetchData?.New_user_Register(Data, null);
         if (Register?.success == true) {
           setLoading(false);
           ToastAndroid.show('Register Successfully', ToastAndroid.SHORT);
           navigation.navigate('Login');
         } else {
-          if (
-            Register?.success == false &&
-            Register?.message == 'User already exist'
-          ) {
+          if (Register?.success == false) {
             setLoading(false);
             ToastAndroid.show(Register?.message, ToastAndroid.SHORT);
           } else {
             setLoading(false);
+            console.log('fegetgt', Register);
+
             ToastAndroid.show('Something went wrong', ToastAndroid.SHORT);
           }
         }
@@ -151,440 +147,494 @@ useEffect(() => {
       }
     }
   };
-  const Get_City_Place =async(item)=>{
+  const Get_City_Place = async item => {
     const City = await fetchData?.City_List_Place(item?._id, null);
-    if(City?.success == true)
-    {
+    if (City?.success == true) {
       setCity(City?.data);
-    }else{
+    } else {
       console.log('Failed To Get City');
-    }   
-  }
+    }
+  };
   return (
-    <SafeAreaView style={styles.container}>
-      <View
-        style={{
-          flex: 0,
-          width: '100%',
-          height: 100,
-          justifyContent: 'center',
-          alignItems: 'center',
-          opacity: 0.6,
-          backgroundColor: Color.white,
-        }}>
-        <ImageBackground
-          source={require('../../assets/Images/verify.jpg')}
-          style={styles.image}
-        />
-      </View>
-      <View
-        style={{
-          flex: 2,
-          top: 50,
-          position: 'absolute',
-          width: '100%',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}>
-        <View style={{width: '95%', padding: 10, marginTop: 20}}>
-          <Text
-            style={{
-              textAlign: 'left',
-              fontSize: 26,
-              color: Color.black,
-              fontFamily: Manrope.Bold,
-            }}>
-            Introduce Your Store
-          </Text>
-          <Text
-            style={{
-              textAlign: 'left',
-              fontSize: 15,
-              color: Color.cloudyGrey,
-              fontFamily: Manrope.Medium,
-              paddingVertical: 5,
-            }}>
-            Present Your Shop to MR Brothers
-          </Text>
+    <View style={styles.container}>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View
+          style={{
+            flex: 0,
+            width: '100%',
+            height: 100,
+            justifyContent: 'center',
+            alignItems: 'center',
+            opacity: 0.6,
+            backgroundColor: Color.white,
+          }}>
+          <ImageBackground
+            source={require('../../assets/Images/verify.jpg')}
+            style={styles.image}
+          />
         </View>
-        <View style={{width: '95%', padding: 10}}>
-          <View style={{marginVertical: 0}}>
-            <View style={styles.NumberBoxConatiner}>
-              <TextInput
-                placeholder={'Enter your shop name'}
-                placeholderTextColor={Color.cloudyGrey}
-                value={name}
-                maxLength={10}
-                autoFocus={false}
-                keyboardType="name-phone-pad"
-                onChangeText={input => {
-                  setName(input);
-                }}
-                style={styles.numberTextBox}
-              />
-              <View style={styles.numberCountryCode}>
-                <Iconviewcomponent
-                  Icontag={'Feather'}
-                  iconname={'user'}
-                  icon_size={20}
-                  iconstyle={{color: Color.cloudyGrey}}
-                />
-              </View>
-            </View>
-          </View>
-          <View style={{marginVertical: 20}}>
-            <View style={styles.NumberBoxConatiner}>
-              <TextInput
-                style={styles.numberTextBox}
-                placeholder="Enter your GST number"
-                placeholderTextColor={Color.cloudyGrey}
-                value={gst}
-                onChangeText={value => {
-                  setGst(value);
-                }}
-                keyboardType="name-phone-pad"
-              />
-              <View style={styles.numberCountryCode}>
-                <Image
-                  source={require('../../assets/Images/gst.png')}
-                  style={{
-                    width: 28,
-                    height: 28,
-                    resizeMode: 'contain',
-                    marginTop: 5,
-                  }}
-                />
-              </View>
-            </View>
-          </View>
-          <Text
-            style={{
-              fontSize: 18,
-              color: Color.lightBlack,
-              fontFamily: Manrope.SemiBold,
-            }}>
-            Enter your shop address
-          </Text>
-          <View style={{marginVertical: 10}}>
-            <View style={styles.NumberBoxConatiner}>
-              <TextInput
-                placeholder={'Building Name'}
-                placeholderTextColor={Color.cloudyGrey}
-                value={buildingName}
-                maxLength={10}
-                autoFocus={false}
-                keyboardType="name-phone-pad"
-                onChangeText={input => {
-                  setBuildingName(input);
-                }}
-                style={styles.numberTextBox}
-              />
-              <View style={styles.numberCountryCode}>
-                <Iconviewcomponent
-                  Icontag={'FontAwesome'}
-                  iconname={'building-o'}
-                  icon_size={20}
-                  iconstyle={{color: Color.cloudyGrey}}
-                />
-              </View>
-            </View>
-          </View>
-          <View style={{marginVertical: 10}}>
-            <View style={styles.NumberBoxConatiner}>
-              <TextInput
-                placeholder={'Street Name / Area'}
-                placeholderTextColor={Color.cloudyGrey}
-                value={street}
-                maxLength={10}
-                autoFocus={false}
-                keyboardType="name-phone-pad"
-                onChangeText={input => {
-                  setStreet(input);
-                }}
-                style={styles.numberTextBox}
-              />
-              <View style={styles.numberCountryCode}>
-                <Iconviewcomponent
-                  Icontag={'Feather'}
-                  iconname={'map-pin'}
-                  icon_size={20}
-                  iconstyle={{color: Color.cloudyGrey}}
-                />
-              </View>
-            </View>
-          </View>
-          <View
-            style={{
-              width: '100%',
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              paddingVertical: 10,
-            }}>
-            <View
-              style={{
-                flex: 1,
-                borderWidth: 0.5,
-                paddingVertical: 10,
-                borderRadius: 5,
-                borderColor: Color.cloudyGrey,
-                flexDirection: 'row',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
-              <View>
-                <Image
-                  source={require('../../assets/Images/flag.png')}
-                  style={{
-                    width: 30,
-                    height: 30,
-                    resizeMode: 'contain',
-                    marginTop: 5,
-                  }}
-                />
-              </View>
-              <Text
-                style={{
-                  fontSize: 16,
-                  color: Color.cloudyGrey,
-                  fontFamily: Manrope.SemiBold,
-                  paddingHorizontal: 10,
-                }}>
-                India
-              </Text>
-            </View>
-            <View
-              style={{
-                width: 10,
-                height: 'auto',
-                backgroundColor: Color.white,
-              }}></View>
-            <TouchableOpacity
-              style={{
-                flex: 1,
-                borderWidth: 0.5,
-                paddingVertical: 15,
-                borderRadius: 5,
-                borderColor: Color.cloudyGrey,
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              }}
-              onPress={() => refRBSheet.current.open()}>
-              <Text
-                style={{
-                  fontSize: 16,
-                  color: Color.cloudyGrey,
-                  fontFamily: Manrope.SemiBold,
-                  paddingHorizontal: 10,
-                }}>
-                {selectedState ? selectedState : "State"} 
-              </Text>
-              <View style={{paddingHorizontal: 10}}>
-                <Iconviewcomponent
-                  Icontag={'Entypo'}
-                  iconname={'chevron-small-down'}
-                  icon_size={20}
-                  iconstyle={{color: Color.cloudyGrey}}
-                />
-              </View>
-            </TouchableOpacity>
-          </View>
-          <View
-            style={{
-              width: '100%',
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              paddingVertical: 10,
-            }}>
-            <TouchableOpacity
-              style={{
-                flex: 1,
-                borderWidth: 0.5,
-                paddingVertical: 15,
-                borderRadius: 5,
-                borderColor: Color.cloudyGrey,
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              }}
-              onPress={() => refRBSheet001.current.open()}>
-              <Text
-                style={{
-                  fontSize: 16,
-                  color: Color.cloudyGrey,
-                  fontFamily: Manrope.SemiBold,
-                  paddingHorizontal: 10,
-                }}>
-                {selectedcity ? selectedcity :"City"}
-              </Text>
-              <View style={{paddingHorizontal: 10}}>
-                <Iconviewcomponent
-                  Icontag={'Entypo'}
-                  iconname={'chevron-small-down'}
-                  icon_size={20}
-                  iconstyle={{color: Color.cloudyGrey}}
-                />
-              </View>
-            </TouchableOpacity>
-            <View
-              style={{
-                width: 10,
-                height: 'auto',
-                backgroundColor: Color.white,
-              }}></View>
-            <View
-              style={{
-                flex: 1,
-                borderWidth: 0.5,
-                borderRadius: 5,
-                borderColor: Color.cloudyGrey,
-                flexDirection: 'row',
-                justifyContent: 'flex-start',
-                alignItems: 'center',
-              }}>
-              <TextInput
-                placeholder={'Pincode'}
-                placeholderTextColor={Color.cloudyGrey}
-                value={pincode}
-                maxLength={6}
-                autoFocus={false}
-                keyboardType="number-pad"
-                onChangeText={input => {
-                  setPincode(input);
-                }}
-                style={{
-                  width: '100%',
-                  height: 55,
-                  borderLeftColor: Color.Venus,
-                  borderLeftWidth: 1,
-                  color: Color.black,
-                  fontSize: 14,
-                  padding: 5,
-                  paddingTop: 5,
-                  paddingHorizontal: 10,
-                  fontFamily: Manrope.SemiBold,
-                  alignItems: 'flex-start',
-                }}
-              />
-            </View>
-          </View>
-          <TouchableOpacity
-            onPress={() => Register_Function()}
-            style={{
-              width: '100%',
-              height: 50,
-              marginVertical: 20,
-              backgroundColor: Color.primary,
-              borderColor: Color.primary,
-              borderWidth: 0.5,
-              justifyContent: 'center',
-              alignItems: 'center',
-              borderRadius: 5,
-            }}>
+        <View
+          style={{
+            flex: 2,
+            top: 50,
+            position: 'absolute',
+            width: '100%',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <View style={{width: '95%', padding: 10, marginTop: 20}}>
             <Text
               style={{
-                fontSize: 16,
-                color: Color.white,
-                fontFamily: Manrope.SemiBold,
-                letterSpacing: 0.5,
+                textAlign: 'left',
+                fontSize: 26,
+                color: Color.black,
+                fontFamily: Manrope.Bold,
               }}>
-              Sign Up
+              Introduce Your Store
             </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-      {/* State bottom Sheet */}
-      <RBSheet
-        ref={refRBSheet}
-        closeOnDragDown={true}
-        closeOnPressMask={true}
-        height={500}
-        customStyles={{
-          wrapper: {
-            backgroundColor: '#00000088',
-          },
-          container: {
-            backgroundColor:"white"
-          },
-        }}>
-        <View style={{margin:20,gap:10}}>
-          <View style={{justifyContent:'center',alignItems:'center',marginBottom:10}}>
-        <Text style={{fontSize:18,fontFamily:Manrope.SemiBold,color:Color.primary,textAlign:'center'}}>Select State</Text>
+            <Text
+              style={{
+                textAlign: 'left',
+                fontSize: 15,
+                color: Color.cloudyGrey,
+                fontFamily: Manrope.Medium,
+                paddingVertical: 5,
+              }}>
+              Present Your Shop to MR Brothers
+            </Text>
           </View>
-          <ScrollView style={{marginBottom:35}}
-          >
-          {
-          state?.map((item, index) => {   
-            const is_Selected = selectedState == item?.name;           
-            return (
+          <View style={{width: '95%', padding: 10}}>
+            <View style={{marginVertical: 0}}>
+              <View style={styles.NumberBoxConatiner}>
+                <TextInput
+                  placeholder={'Enter your shop name'}
+                  placeholderTextColor={Color.cloudyGrey}
+                  value={name}
+                  // maxLength={10}
+                  autoFocus={false}
+                  keyboardType="name-phone-pad"
+                  onChangeText={input => {
+                    setName(input);
+                  }}
+                  style={styles.numberTextBox}
+                />
+                <View style={styles.numberCountryCode}>
+                  <Iconviewcomponent
+                    Icontag={'Feather'}
+                    iconname={'user'}
+                    icon_size={20}
+                    iconstyle={{color: Color.cloudyGrey}}
+                  />
+                </View>
+              </View>
+            </View>
+            <View style={{marginVertical: 20}}>
+              <View style={styles.NumberBoxConatiner}>
+                <TextInput
+                  style={styles.numberTextBox}
+                  placeholder="Enter your GST number"
+                  placeholderTextColor={Color.cloudyGrey}
+                  value={gst}
+                  onChangeText={value => {
+                    const filteredValue = value.replace(/[^a-zA-Z0-9]/g, '');
+                    setGst(filteredValue);
+                  }}
+                  keyboardType="default"
+                  maxLength={15}
+                />
+                <View style={styles.numberCountryCode}>
+                  <Image
+                    source={require('../../assets/Images/gst.png')}
+                    style={{
+                      width: 28,
+                      height: 28,
+                      resizeMode: 'contain',
+                      marginTop: 5,
+                    }}
+                  />
+                </View>
+              </View>
+            </View>
+            <Text
+              style={{
+                fontSize: 18,
+                color: Color.lightBlack,
+                fontFamily: Manrope.SemiBold,
+              }}>
+              Enter your shop address
+            </Text>
+            <View style={{marginVertical: 10}}>
+              <View style={styles.NumberBoxConatiner}>
+                <TextInput
+                  placeholder={'Building Name'}
+                  placeholderTextColor={Color.cloudyGrey}
+                  value={buildingName}
+                  // maxLength={10}
+                  autoFocus={false}
+                  keyboardType="name-phone-pad"
+                  onChangeText={input => {
+                    setBuildingName(input);
+                  }}
+                  style={styles.numberTextBox}
+                />
+                <View style={styles.numberCountryCode}>
+                  <Iconviewcomponent
+                    Icontag={'FontAwesome'}
+                    iconname={'building-o'}
+                    icon_size={20}
+                    iconstyle={{color: Color.cloudyGrey}}
+                  />
+                </View>
+              </View>
+            </View>
+            <View style={{marginVertical: 10}}>
+              <View style={styles.NumberBoxConatiner}>
+                <TextInput
+                  placeholder={'Street Name / Area'}
+                  placeholderTextColor={Color.cloudyGrey}
+                  value={street}
+                  // maxLength={10}
+                  autoFocus={false}
+                  keyboardType="name-phone-pad"
+                  onChangeText={input => {
+                    setStreet(input);
+                  }}
+                  style={styles.numberTextBox}
+                />
+                <View style={styles.numberCountryCode}>
+                  <Iconviewcomponent
+                    Icontag={'Feather'}
+                    iconname={'map-pin'}
+                    icon_size={20}
+                    iconstyle={{color: Color.cloudyGrey}}
+                  />
+                </View>
+              </View>
+            </View>
+            <View
+              style={{
+                width: '100%',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                paddingVertical: 10,
+              }}>
+              <View
+                style={{
+                  flex: 1,
+                  borderWidth: 0.5,
+                  paddingVertical: 10,
+                  borderRadius: 5,
+                  borderColor: Color.cloudyGrey,
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <View>
+                  <Image
+                    source={require('../../assets/Images/flag.png')}
+                    style={{
+                      width: 30,
+                      height: 30,
+                      resizeMode: 'contain',
+                      marginTop: 5,
+                    }}
+                  />
+                </View>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    color: Color.cloudyGrey,
+                    fontFamily: Manrope.SemiBold,
+                    paddingHorizontal: 10,
+                  }}>
+                  India
+                </Text>
+              </View>
+              <View
+                style={{
+                  width: 10,
+                  height: 'auto',
+                  backgroundColor: Color.white,
+                }}></View>
               <TouchableOpacity
-                key={index}
-                onPress={() => {
-                  refRBSheet.current.close();
-                  Get_City_Place(item);
-                  // console.log(item,'????'); 
-                  setSelectedState(item?.name);
+                style={{
+                  flex: 1,
+                  borderWidth: 0.5,
+                  paddingVertical: 15,
+                  borderRadius: 5,
+                  borderColor: Color.cloudyGrey,
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
                 }}
-                 style={{
-                  padding: 10,borderWidth:1,borderColor:is_Selected ? Color.primary :'#E5E5E5',borderRadius:5,justifyContent:'center',marginBottom:5}}
-                >
-                <Text style={{fontSize:14,fontFamily:Manrope.SemiBold,textAlign:'center'}}>{item?.name}</Text>
+                onPress={() => refRBSheet.current.open()}>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    color: Color.cloudyGrey,
+                    fontFamily: Manrope.SemiBold,
+                    paddingHorizontal: 10,
+                  }}>
+                  {selectedState ? selectedState : 'State'}
+                </Text>
+                <View style={{paddingHorizontal: 10}}>
+                  <Iconviewcomponent
+                    Icontag={'Entypo'}
+                    iconname={'chevron-small-down'}
+                    icon_size={20}
+                    iconstyle={{color: Color.cloudyGrey}}
+                  />
+                </View>
               </TouchableOpacity>
-              // <Text>lbnnkk</Text>
-            );
-          })
-        }
-          </ScrollView>
-        
-        </View>
-      </RBSheet>
-      <RBSheet
-        ref={refRBSheet001}
-        closeOnDragDown={true}
-        closeOnPressMask={true}
-        height={500}
-        customStyles={{
-          wrapper: {
-            backgroundColor: '#00000088',
-          },
-          container: {
-            backgroundColor:"white"
-          },
-        }}>
-        <View style={{margin:20,gap:10}}>
-          <View style={{justifyContent:'center',alignItems:'center',marginBottom:10}}>
-        <Text style={{fontSize:18,fontFamily:Manrope.SemiBold,color:Color.primary,textAlign:'center'}}>Select city</Text>
+            </View>
+            <View
+              style={{
+                width: '100%',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                paddingVertical: 10,
+              }}>
+              <TouchableOpacity
+                style={{
+                  flex: 1,
+                  borderWidth: 0.5,
+                  paddingVertical: 15,
+                  borderRadius: 5,
+                  borderColor: Color.cloudyGrey,
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}
+                onPress={() =>
+                  selectedState
+                    ? refRBSheet001.current.open()
+                    : ToastAndroid.show(
+                        'Please Select a State ',
+                        ToastAndroid.SHORT,
+                      )
+                }>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    color: Color.cloudyGrey,
+                    fontFamily: Manrope.SemiBold,
+                    paddingHorizontal: 10,
+                  }}>
+                  {selectedcity ? selectedcity : 'City'}
+                </Text>
+                <View style={{paddingHorizontal: 10}}>
+                  <Iconviewcomponent
+                    Icontag={'Entypo'}
+                    iconname={'chevron-small-down'}
+                    icon_size={20}
+                    iconstyle={{color: Color.cloudyGrey}}
+                  />
+                </View>
+              </TouchableOpacity>
+              <View
+                style={{
+                  width: 10,
+                  height: 'auto',
+                  backgroundColor: Color.white,
+                }}></View>
+              <View
+                style={{
+                  flex: 1,
+                  borderWidth: 0.5,
+                  borderRadius: 5,
+                  borderColor: Color.cloudyGrey,
+                  flexDirection: 'row',
+                  justifyContent: 'flex-start',
+                  alignItems: 'center',
+                }}>
+                <TextInput
+                  placeholder={'Pincode'}
+                  placeholderTextColor={Color.cloudyGrey}
+                  value={pincode}
+                  maxLength={6}
+                  autoFocus={false}
+                  keyboardType="number-pad"
+                  onChangeText={input => {
+                    setPincode(input);
+                  }}
+                  style={{
+                    width: '100%',
+                    height: 55,
+                    borderLeftColor: Color.Venus,
+                    borderLeftWidth: 1,
+                    color: Color.black,
+                    fontSize: 14,
+                    padding: 5,
+                    paddingTop: 5,
+                    paddingHorizontal: 10,
+                    fontFamily: Manrope.SemiBold,
+                    alignItems: 'flex-start',
+                  }}
+                />
+              </View>
+            </View>
+            <TouchableOpacity
+              onPress={() => Register_Function()}
+              style={{
+                width: '100%',
+                height: 50,
+                marginVertical: 20,
+                backgroundColor: Color.primary,
+                borderColor: Color.primary,
+                borderWidth: 0.5,
+                justifyContent: 'center',
+                alignItems: 'center',
+                borderRadius: 5,
+              }}>
+              <Text
+                style={{
+                  fontSize: 16,
+                  color: Color.white,
+                  fontFamily: Manrope.SemiBold,
+                  letterSpacing: 0.5,
+                }}>
+                Sign Up
+              </Text>
+            </TouchableOpacity>
           </View>
-          <ScrollView style={{marginBottom:35}}
-          >
-          {
-          city?.map((item, index) => { 
-            const is_Selected = selectedcity == item?.name;  
-            console.log(is_Selected,'is_Selectedis_Selected');
-            
-            return (
-              <TouchableOpacity
-                key={index}
-                onPress={() => {
-                  refRBSheet001.current.close(); 
-                  setSelectedcity(item?.name);
-                }}
-                 style={{
-                  padding: 10,borderWidth:1,borderColor:is_Selected ? Color.primary :'#E5E5E5',borderRadius:5,justifyContent:'center',marginBottom:5}}
-                >
-                <Text style={{fontSize:14,fontFamily:Manrope.SemiBold,textAlign:'center'}}>{item?.name}</Text>
-              </TouchableOpacity>
-              // <Text>lbnnkk</Text>
-            );
-          })
-        }
-          </ScrollView>
-        
         </View>
-      </RBSheet>
-    </SafeAreaView>
+        {/* State bottom Sheet */}
+        <RBSheet
+          ref={refRBSheet}
+          closeOnDragDown={true}
+          closeOnPressMask={true}
+          height={500}
+          customStyles={{
+            wrapper: {
+              backgroundColor: '#00000088',
+            },
+            container: {
+              backgroundColor: 'white',
+            },
+          }}>
+          <View style={{margin: 20, gap: 10}}>
+            <View
+              style={{
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginBottom: 10,
+              }}>
+              <Text
+                style={{
+                  fontSize: 18,
+                  fontFamily: Manrope.SemiBold,
+                  color: Color.primary,
+                  textAlign: 'center',
+                }}>
+                Select State
+              </Text>
+            </View>
+            <ScrollView style={{marginBottom: 35}}>
+              {state?.map((item, index) => {
+                const is_Selected = selectedState == item?.name;
+                return (
+                  <TouchableOpacity
+                    key={index}
+                    onPress={() => {
+                      refRBSheet.current.close();
+                      Get_City_Place(item);
+                      // console.log(item,'????');
+                      setSelectedState(item?.name);
+                    }}
+                    style={{
+                      padding: 10,
+                      borderWidth: 1,
+                      borderColor: is_Selected ? Color.primary : '#E5E5E5',
+                      borderRadius: 5,
+                      justifyContent: 'center',
+                      marginBottom: 5,
+                    }}>
+                    <Text
+                      style={{
+                        color: Color?.black,
+                        fontSize: 14,
+                        fontFamily: Manrope.SemiBold,
+                        textAlign: 'center',
+                      }}>
+                      {item?.name}
+                    </Text>
+                  </TouchableOpacity>
+                  // <Text>lbnnkk</Text>
+                );
+              })}
+            </ScrollView>
+          </View>
+        </RBSheet>
+        <RBSheet
+          ref={refRBSheet001}
+          closeOnDragDown={true}
+          closeOnPressMask={true}
+          height={500}
+          customStyles={{
+            wrapper: {
+              backgroundColor: '#00000088',
+            },
+            container: {
+              backgroundColor: 'white',
+            },
+          }}>
+          <View style={{margin: 20, gap: 10}}>
+            <View
+              style={{
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginBottom: 10,
+              }}>
+              <Text
+                style={{
+                  fontSize: 18,
+                  fontFamily: Manrope.SemiBold,
+                  color: Color.primary,
+                  textAlign: 'center',
+                }}>
+                Select city
+              </Text>
+            </View>
+            <ScrollView style={{marginBottom: 35}}>
+              {city?.map((item, index) => {
+                const is_Selected = selectedcity == item?.name;
+                console.log(is_Selected, 'is_Selectedis_Selected');
+
+                return (
+                  <TouchableOpacity
+                    key={index}
+                    onPress={() => {
+                      refRBSheet001.current.close();
+                      setSelectedcity(item?.name);
+                    }}
+                    style={{
+                      padding: 10,
+                      borderWidth: 1,
+                      borderColor: is_Selected ? Color.primary : '#E5E5E5',
+                      borderRadius: 5,
+                      justifyContent: 'center',
+                      marginBottom: 5,
+                    }}>
+                    <Text
+                      style={{
+                        color: Color?.black,
+                        fontSize: 14,
+                        fontFamily: Manrope.SemiBold,
+                        textAlign: 'center',
+                      }}>
+                      {item?.name}
+                    </Text>
+                  </TouchableOpacity>
+                  // <Text>lbnnkk</Text>
+                );
+              })}
+            </ScrollView>
+          </View>
+        </RBSheet>
+      </ScrollView>
+    </View>
   );
 };
 
@@ -593,8 +643,8 @@ useEffect(() => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
     backgroundColor: Color.white,
+    alignItems: 'center',
   },
   image: {
     width: scr_width,

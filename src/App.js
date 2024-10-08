@@ -1,43 +1,53 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Linking,
   LogBox,
   NativeEventEmitter,
   StatusBar,
-  View, NativeModules
+  View,
+  NativeModules,
 } from 'react-native';
 
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import { createDrawerNavigator } from '@react-navigation/drawer';
-import { Provider, useDispatch } from 'react-redux';
+import {NavigationContainer} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
+import {createDrawerNavigator} from '@react-navigation/drawer';
+import {Provider, useDispatch} from 'react-redux';
 
-import { Provider as PaperProvider } from 'react-native-paper';
+import {Provider as PaperProvider} from 'react-native-paper';
 // import {navigationRef} from '../RootNavigation';
 import Store from './Redux/Store';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { setCountryCode, setUserData } from './Redux';
+import {setCountryCode, setUserData} from './Redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import OnboardOne from './Screens/OnboardScreens/OnboardOne';
 import Color from './Global/Color';
 import SplashScreen from './Splash';
-import TabNavigator, { Auth } from './route';
+import TabNavigator, {Auth} from './route';
 import TermsandConditions from './Screens/SideMenu/TermsandConditions';
 import PrivacyPolicy from './Screens/SideMenu/PrivacyPolicy';
 import ContactUs from './Screens/SideMenu/ContactUs';
 import AboutUs from './Screens/SideMenu/AboutUs';
-import { Manrope } from './Global/FontFamily';
+import {Manrope} from './Global/FontFamily';
 import ProfileView from './Screens/ProfileScreens/ProfileView';
 import MyCart from './Screens/Home/MyCart';
 import Notification_Screen from './Screens/Home/BottomTabs/Notification';
 import SelectCategory from './Screens/Home/SelectCategory';
+import OrderSuccess from './Screens/Home/OrderSuccess';
+import OrderSummary from './Screens/Home/OrderSummary';
+import SearchScreen from './Screens/Home/SearchScreen';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 
 LogBox.ignoreAllLogs;
 export const navigationRef = React.createRef();
+// useEffect(() => {
+//   const unsubscribe = messaging().onMessage(async remoteMessage => {
+//     Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
+//   });
 
+//   return unsubscribe;
+// }, []);
 const MyDrawer = () => {
   const dispatch = useDispatch();
   return (
@@ -45,19 +55,19 @@ const MyDrawer = () => {
       <NavigationContainer ref={navigationRef}>
         <Drawer.Navigator
           initialRouteName="Home"
-          screenOptions={{ swipeEnabled: false }}
-        // drawerContent={props => 
-        // <CustomDrawerContent {...props} />}
+          screenOptions={{swipeEnabled: false}}
+          // drawerContent={props =>
+          // <CustomDrawerContent {...props} />}
         >
           <Drawer.Screen
             name="Home"
             component={MainApp}
-            options={{ headerShown: false }}
+            options={{headerShown: false}}
           />
           <Stack.Screen
             name="OnboardOne"
             component={OnboardOne}
-            options={{ headerShown: false }}
+            options={{headerShown: false}}
           />
         </Drawer.Navigator>
       </NavigationContainer>
@@ -66,7 +76,6 @@ const MyDrawer = () => {
 };
 
 const App = () => {
-  
   return (
     <Provider store={Store}>
       <MyDrawer />
@@ -82,37 +91,37 @@ const MainApp = () => {
         <Stack.Screen
           name="Splash"
           component={SplashScreen}
-          options={{ headerShown: false }}
+          options={{headerShown: false}}
         />
 
         <Stack.Screen
           name="OnboardOne"
           component={OnboardOne}
-          options={{ headerShown: false }}
+          options={{headerShown: false}}
         />
 
         <Stack.Screen
           name="Auth"
           component={Auth}
-          options={{ headerShown: false }}
+          options={{headerShown: false}}
         />
 
         <Stack.Screen
           name="TabNavigator"
           component={TabNavigator}
-          options={{ headerShown: false }}
+          options={{headerShown: false}}
         />
 
         <Stack.Screen
           name="ProfileView"
           component={ProfileView}
-          options={({ navigation, route }) => ({
+          options={({navigation, route}) => ({
             headerTitle: 'Profile View',
             headerTitleAlign: 'center',
-            headerTitleStyle: { color: Color.black },
-            headerStyle: { backgroundColor: Color.white },
+            headerTitleStyle: {color: Color.black},
+            headerStyle: {backgroundColor: Color.white},
             headerLeft: () => (
-              <View style={{ marginHorizontal: 10 }}>
+              <View style={{marginHorizontal: 10}}>
                 <Icon
                   name="arrow-back"
                   size={30}
@@ -126,33 +135,23 @@ const MainApp = () => {
         <Stack.Screen
           name="SelectCategory"
           component={SelectCategory}
-          options={({ navigation, route }) => ({
-            headerTitle: 'Select Category',
-            headerTitleAlign: 'center',
-            headerTitleStyle: { color: Color.black },
-            headerStyle: { backgroundColor: Color.white },
-            headerLeft: () => (
-              <View style={{ marginHorizontal: 10 }}>
-                <Icon
-                  name="arrow-back"
-                  size={30}
-                  color={Color.black}
-                  onPress={() => navigation.goBack()}
-                />
-              </View>
-            ),
-          })}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="SearchScreen"
+          component={SearchScreen}
+          options={{headerShown: false}}
         />
         <Stack.Screen
           name="MyCart"
           component={MyCart}
-          options={({ navigation, route }) => ({
+          options={({navigation, route}) => ({
             headerTitle: 'My Cart',
             headerTitleAlign: 'center',
-            headerTitleStyle: { color: Color.black },
-            headerStyle: { backgroundColor: Color.white },
+            headerTitleStyle: {color: Color.black},
+            headerStyle: {backgroundColor: Color.white},
             headerLeft: () => (
-              <View style={{ marginHorizontal: 10 }}>
+              <View style={{marginHorizontal: 10}}>
                 <Icon
                   name="arrow-back"
                   size={30}
@@ -163,17 +162,45 @@ const MainApp = () => {
             ),
           })}
         />
-       
+
+        <Stack.Screen
+          name="OrderSuccess"
+          component={OrderSuccess}
+          //  options={{headerShown: false}}
+          options={({navigation, route}) => ({
+            headerTitle: 'Order Placed',
+            headerTitleAlign: 'center',
+            headerTitleStyle: {color: Color.black},
+            headerStyle: {backgroundColor: Color.white, elevation: 1},
+            headerLeft: () => (
+              <View style={{marginHorizontal: 10}}>
+                <Icon
+                  name="arrow-back"
+                  size={30}
+                  color={Color.black}
+                  onPress={() =>
+                    navigation.navigate('TabNavigator', {screen: 'MyOrderTab'})
+                  }
+                />
+              </View>
+            ),
+          })}
+        />
+        <Stack.Screen
+          name="OrderSummary"
+          component={OrderSummary}
+          options={{headerShown: false}}
+        />
         <Stack.Screen
           name="TermsandConditions"
           component={TermsandConditions}
-          options={({ navigation, route }) => ({
+          options={({navigation, route}) => ({
             headerTitle: 'Terms & Conditions',
             headerTitleAlign: 'center',
-            headerTitleStyle: { color: Color.black },
-            headerStyle: { backgroundColor: Color.white, elevation: 1 },
+            headerTitleStyle: {color: Color.black},
+            headerStyle: {backgroundColor: Color.white, elevation: 1},
             headerLeft: () => (
-              <View style={{ marginHorizontal: 10 }}>
+              <View style={{marginHorizontal: 10}}>
                 <Icon
                   name="arrow-back"
                   size={30}
@@ -188,12 +215,12 @@ const MainApp = () => {
         <Stack.Screen
           name="PrivacyPolicy"
           component={PrivacyPolicy}
-          options={({ navigation, route }) => ({
+          options={({navigation, route}) => ({
             headerTitle: 'Privacy Policy',
-            headerTitleStyle: { color: Color.black },
-            headerStyle: { backgroundColor: Color.white, elevation: 1 },
+            headerTitleStyle: {color: Color.black},
+            headerStyle: {backgroundColor: Color.white, elevation: 1},
             headerLeft: () => (
-              <View style={{ marginHorizontal: 10 }}>
+              <View style={{marginHorizontal: 10}}>
                 <Icon
                   name="arrow-back"
                   size={30}
@@ -208,7 +235,7 @@ const MainApp = () => {
         <Stack.Screen
           name="AboutUs"
           component={AboutUs}
-          options={({ navigation, route }) => ({
+          options={({navigation, route}) => ({
             headerTitle: 'About Us',
             headerTitleAlign: 'center',
             headerTitleStyle: {
@@ -216,9 +243,9 @@ const MainApp = () => {
               fontSize: 18,
               fontFamily: Manrope.Bold,
             },
-            headerStyle: { backgroundColor: Color.white },
+            headerStyle: {backgroundColor: Color.white},
             headerLeft: () => (
-              <View style={{ marginHorizontal: 10 }}>
+              <View style={{marginHorizontal: 10}}>
                 <Icon
                   name="arrow-back"
                   size={30}
@@ -233,7 +260,7 @@ const MainApp = () => {
         <Stack.Screen
           name="ContactUs"
           component={ContactUs}
-          options={({ navigation, route }) => ({
+          options={({navigation, route}) => ({
             headerTitle: 'Contact Us',
             headerTitleAlign: 'center',
             headerTitleStyle: {
@@ -241,9 +268,9 @@ const MainApp = () => {
               fontSize: 18,
               fontFamily: Manrope.Bold,
             },
-            headerStyle: { backgroundColor: Color.white },
+            headerStyle: {backgroundColor: Color.white},
             headerLeft: () => (
-              <View style={{ marginHorizontal: 10 }}>
+              <View style={{marginHorizontal: 10}}>
                 <Icon
                   name="arrow-back"
                   size={30}
@@ -389,7 +416,6 @@ const MainApp = () => {
             ),
           })}
         /> */}
-
       </Stack.Navigator>
     </>
   );

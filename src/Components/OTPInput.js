@@ -2,7 +2,8 @@ import React, {useState, useEffect} from 'react';
 import {StyleSheet} from 'react-native';
 import {Pressable, TextInput, View, Keyboard, Text} from 'react-native';
 import Color from '../Global/Color';
-import { Manrope } from '../Global/FontFamily';
+import {Manrope} from '../Global/FontFamily';
+import {scr_height, scr_width} from '../Utils/Dimensions';
 
 const OTPInput = ({
   inputRef,
@@ -101,8 +102,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 10,
     padding: 12,
-    minWidth: 55,
-    height: 55,
+    width: scr_width / 7.5,
+    height: scr_height / 15,
     justifyContent: 'center',
     marginHorizontal: 20,
   },
